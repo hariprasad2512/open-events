@@ -1,0 +1,22 @@
+{
+  "status": "ok",
+  "generatedAt": "2026-08-19T00:00:00Z",
+  "summary": {
+    "totalItems": 0,
+    "averageScore": 0
+  },
+  "items": [
+    {
+      "id": "string",
+      "title": "string",
+      "source": "string",
+      "url": "string",
+      "score": 0,
+      "tags": ["string"],
+      "metadata": {
+        "scrapedAt": "2026-08-19T00:00:00Z",
+        "region": "string"
+      }
+    }
+  ]
+}

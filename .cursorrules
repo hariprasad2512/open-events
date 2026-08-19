@@ -1,0 +1,14 @@
+# Cursor Project Rules
+
+## Scope
+- Workspace: scrape-verse-project
+- Keep frontend and backend concerns separated.
+
+## Coding Style
+- Prefer clear, modular code.
+- Add concise comments only where logic is non-obvious.
+- Avoid committing secrets.
+
+## Safety
+- Never store real API keys in repository files.
+- Use .env for local secrets and keep .env out of git.
