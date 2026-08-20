@@ -1,6 +1,32 @@
-# Contributing to Scrape Verse
+# CONTRIBUTING.md
 
-Welcome to the team! To ensure smooth collaboration among our 4-member team, please adhere to these guidelines.
+> Contribution and collaboration guidelines for Startup Traction Intelligence.
+
+This repository is developed collaboratively by human team members and AI-assisted development tools.
+
+The goal is to keep changes:
+
+- focused
+- reviewable
+- reproducible
+- understandable by the entire team
+
+---
+
+# 1. Before You Start
+
+Before starting any task, read:
+
+1. `AI_INSTRUCTIONS.md`
+2. `PROJECT_STATE.md`
+3. `DECISIONS.md`
+4. `TASKS.md`
+
+Then inspect any relevant documentation under:
+
+```text
+docs/
+```
 
 ## Branching Strategy
 

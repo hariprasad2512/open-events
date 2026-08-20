@@ -1,22 +1,25 @@
 {
-  "scrapers": [
+  "collectors": [
     {
-      "id": "c_9f81a7b4",
-      "name": "job_boards_scraper",
-      "target": "Job Boards",
-      "active": true
+      "name": "github_startup_signals",
+      "collector_id": "c_9f81a7b4",
+      "source": "github",
+      "purpose": "Collect developer activity, stars, and contributors",
+      "status": "APPROVED"
     },
     {
-      "id": "c_code_repos",
-      "name": "code_repos_scraper",
-      "target": "Code Repos",
-      "active": true
+      "name": "job_activity_signals",
+      "collector_id": "c_job_boards",
+      "source": "job_boards",
+      "purpose": "Collect hiring openings and engineering roles",
+      "status": "APPROVED"
     },
     {
-      "id": "c_news",
-      "name": "news_scraper",
-      "target": "News",
-      "active": true
+      "name": "news_product_signals",
+      "collector_id": "c_news_source",
+      "source": "news",
+      "purpose": "Collect product updates and funding announcements",
+      "status": "APPROVED"
     }
   ]
 }
