@@ -1,23 +1,44 @@
 # Environment
 .env
+.env.local
 .venv/
 venv/
+ENV/
+env/
 
-# Node
+# SQLite databases (local persistence)
+*.db
+*.sqlite
+*.sqlite3
+backend/pipeline.db
+
+# Node.js dependencies & builds
 node_modules/
-
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Build artifacts
-dist/
+.next/
+out/
 build/
+dist/
 
-# OS / Editor
+# Python caching & builds
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# OS / Editor configuration
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+.pranav/*
