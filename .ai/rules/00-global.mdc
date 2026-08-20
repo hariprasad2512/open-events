@@ -1,0 +1,11 @@
+---
+description: Global system constraints and coding style for Scrape Verse project.
+globs: *
+---
+# Global Rules
+
+- Always read `AI_INSTRUCTIONS.md`, `PROJECT_STATE.md`, `DECISIONS.md`, `TASKS.md`, and relevant docs before starting.
+- Maintain documentation integrity: do not delete existing comments unless requested.
+- Always use relative imports within `app` packages or point correctly to `app.*`.
+- Do not check in database binaries (`*.db`) or environment configuration files (`.env`).
+- Maintain cleanliness of code layout conforming to `.editorconfig` (4 spaces for Python, 2 spaces for JS/TS/JSON).

@@ -1,0 +1,10 @@
+---
+description: Branching, PRs, and commit guidelines.
+globs: .github/**/*, CONTRIBUTING.md
+---
+# Git Conventions
+
+- Never commit directly to `main`.
+- Use descriptive branch names prefixed with developer names or features (e.g. `pranav/repo-env-init`).
+- Write commits using Conventional Commit labels: `feat:`, `fix:`, `docs:`, `chore:`.
+- Ensure all CI tests pass before submitting and merging pull requests.
