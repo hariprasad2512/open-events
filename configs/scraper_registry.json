@@ -1,0 +1,22 @@
+{
+  "scrapers": [
+    {
+      "id": "c_9f81a7b4",
+      "name": "job_boards_scraper",
+      "target": "Job Boards",
+      "active": true
+    },
+    {
+      "id": "c_code_repos",
+      "name": "code_repos_scraper",
+      "target": "Code Repos",
+      "active": true
+    },
+    {
+      "id": "c_news",
+      "name": "news_scraper",
+      "target": "News",
+      "active": true
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+# Scoring Engine Configuration Weights
+
+sources:
+  github_repos: 90
+  github_jobs: 85
+  linkedin_jobs: 80
+  techcrunch: 65
+  mit_tech_review: 75
+  generic_web_scrape: 50
+
+tags:
+  ai: 10
+  llm: 10
+  mlops: 15
+  quantum: 12
+  python: 5
+  framework: 5
+  open_source: 8
