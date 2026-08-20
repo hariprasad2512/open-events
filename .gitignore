@@ -35,10 +35,11 @@ htmlcov/
 Thumbs.db
 .vscode/
 .idea/
+.pranav/
+
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.swp
 
-.pranav/*
