@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StartupProfile",
+  "type": "object",
+  "properties": {
+    "startup_id": { "type": "string" },
+    "startup_name": { "type": "string" },
+    "website": { "type": "string" },
+    "description": { "type": "string" },
+    "latest_snapshot_at": { "type": "string", "format": "date-time" },
+    "traction": {
+      "type": "object",
+      "properties": {
+        "score": { "type": "number" },
+        "change": { "type": "number" },
+        "calculated_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["score", "calculated_at"]
+    }
+  },
+  "required": ["startup_id", "startup_name"]
+}

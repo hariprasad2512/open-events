@@ -1,7 +1,7 @@
 import random
 import uuid
 from datetime import datetime
-from backend.config import BRIGHT_DATA_SCRAPER_ID as SCRAPER_ID
+from app.config import BRIGHT_DATA_SCRAPER_ID as SCRAPER_ID
 
 def collect_raw_dataset(target: str, inject_errors: bool = False) -> list:
     """

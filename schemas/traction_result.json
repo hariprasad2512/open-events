@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TractionResult",
+  "type": "object",
+  "properties": {
+    "startup_id": { "type": "string" },
+    "traction_score": { "type": "number" },
+    "score_change": { "type": "number" },
+    "calculated_at": { "type": "string", "format": "date-time" },
+    "contributors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "signal_category": { "type": "string" },
+          "metric": { "type": "string" },
+          "impact": { "type": "string" },
+          "reason": { "type": "string" }
+        },
+        "required": ["signal_category", "metric", "impact", "reason"]
+      }
+    }
+  },
+  "required": ["startup_id", "traction_score", "calculated_at"]
+}

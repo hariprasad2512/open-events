@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StartupSignal",
+  "type": "object",
+  "properties": {
+    "startup_id": { "type": "string" },
+    "startup_name": { "type": "string" },
+    "signal_category": { "type": "string" },
+    "metric": { "type": "string" },
+    "value": { "type": "number" },
+    "unit": { "type": "string" },
+    "source": { "type": "string" },
+    "observed_at": { "type": "string", "format": "date-time" },
+    "metadata": { "type": "object" }
+  },
+  "required": ["startup_id", "signal_category", "metric", "value", "source", "observed_at"]
+}
