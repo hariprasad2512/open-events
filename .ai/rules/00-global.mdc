@@ -1,11 +1,48 @@
 ---
-description: Global system constraints and coding style for Scrape Verse project.
+description: Mandatory agent lifecycle, pre-work requirements, and global system constraints.
 globs: *
 ---
-# Global Rules
+# 00-global.mdc — Mandatory Agent Lifecycle & Governance
 
-- Always read `AI_INSTRUCTIONS.md`, `PROJECT_STATE.md`, `DECISIONS.md`, `TASKS.md`, and relevant docs before starting.
-- Maintain documentation integrity: do not delete existing comments unless requested.
-- Always use relative imports within `app` packages or point correctly to `app.*`.
-- Do not check in database binaries (`*.db`) or environment configuration files (`.env`).
-- Maintain cleanliness of code layout conforming to `.editorconfig` (4 spaces for Python, 2 spaces for JS/TS/JSON).
+Every AI agent (Cursor, Codex, Antigravity) must follow this lifecycle for every task:
+
+```text
+ORIENT ➔ READ ➔ CHECK ➔ SCOPE ➔ IMPLEMENT ➔ VALIDATE ➔ UPDATE ➔ REPORT
+```
+
+---
+
+## 1. MANDATORY PRE-WORK (ORIENT & READ)
+
+Before modifying any file, agents **must** inspect the current repository state:
+
+1. Read `.ai/AI_INSTRUCTIONS.md` (Universal Constitution)
+2. Read `.ai/PROJECT_STATE.md` (Current Project Truth)
+3. Read `.ai/DECISIONS.md` (Settled Decisions Log)
+4. Read `.ai/TASKS.md` (Active Work Queue)
+5. Read relevant documentation in `docs/`
+6. Check current Git branch (`git status`, `git branch`)
+
+---
+
+## 2. SYSTEM BOUNDARIES (CHECK & SCOPE)
+
+- **Do not invent architecture**: Respect layer boundaries (`frontend/`, `backend/`, `configs/`, `schemas/`, `docs/`).
+- **Data Contracts First**: Check `schemas/` and `docs/data-contract.md` before changing data handlers.
+- **Never expose secrets**: Do not commit `.env`, API keys, tokens, or credentials.
+- **Do not track databases**: Local SQLite database binaries (`*.db`, `*.sqlite3`) must remain untracked.
+- **Code formatting**: Follow `.editorconfig` (4 spaces for Python, 2 spaces for JS/TS/JSON/YAML).
+
+---
+
+## 3. MANDATORY POST-WORK (VALIDATE, UPDATE & REPORT)
+
+Before declaring any task complete:
+
+1. **Run Validation**: Execute tests (`$env:PYTHONPATH="backend"; python -m unittest backend/tests/test_pipeline.py`).
+2. **Review Diff**: Check `git status` to verify only intended files were modified.
+3. **Update State Files**:
+   - Update `.ai/TASKS.md` (mark task status)
+   - Update `.ai/PROJECT_STATE.md` (if project state changed)
+   - Update `.ai/DECISIONS.md` (if a new decision was made)
+4. **Report Outcome**: Provide a structured completion report (Implemented, Changed, Tests, Known Limitations, Next Steps).

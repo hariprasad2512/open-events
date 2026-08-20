@@ -1,10 +1,22 @@
 ---
-description: Python, FastAPI, Pandas, and SQLite coding guidelines.
+description: Python, FastAPI, Pandas, and SQLite backend development rules.
 globs: backend/**/*.py, backend/requirements.txt
 ---
-# Backend Conventions
+# 20-backend.mdc — Backend Development & Modular Pipeline Rules
 
-- **Code Standard**: Follow PEP 8 guidelines.
-- **FastAPI**: Declare types for all path parameters, query parameters, and route responses. Use BackgroundTasks for long-running operations.
-- **Database**: Use connections dynamically loaded from environment configurations. Manage SQLite resource handles cleanly.
-- **Tests**: Always run `python -m unittest` to verify logic integrity before committing code. Keep test scripts under `backend/tests/`.
+Applies to: `backend/**`
+
+---
+
+## BACKEND RULES
+
+1. **Thin Route Layer**: FastAPI routes (`backend/app/main.py`) must remain thin. Business logic belongs in processor/validator/orchestrator modules.
+2. **Module Ownership**:
+   - `backend/app/scraper/collector.py` owns raw data harvesting.
+   - `backend/app/scraper/validator.py` owns schema validation and self-healing.
+   - `backend/app/processor/normalizer.py` owns Pandas data cleanup.
+   - `backend/app/processor/scoring.py` owns intelligence metrics calculation.
+   - `backend/app/database.py` owns SQLite time-series storage.
+3. **No Hardcoded Credentials**: Read configuration from `backend/app/config.py` (which loads `.env`).
+4. **Untracked Databases**: Local SQLite binary files (`pipeline.db`, `*.db`, `*.sqlite3`) must remain git-ignored.
+5. **Testing Requirement**: Run pipeline tests (`$env:PYTHONPATH="backend"; python -m unittest backend/tests/test_pipeline.py`) before declaring backend tasks done.

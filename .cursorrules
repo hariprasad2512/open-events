@@ -1,14 +1,10 @@
-# Cursor Project Rules
+# Cursor Rules Compatibility Pointer
 
-## Scope
-- Workspace: scrape-verse-project
-- Keep frontend and backend concerns separated.
+Repository rules and domain guidelines are defined in `.cursor/rules/`.
+Canonical cross-agent instructions are located in `.ai/AI_INSTRUCTIONS.md`.
 
-## Coding Style
-- Prefer clear, modular code.
-- Add concise comments only where logic is non-obvious.
-- Avoid committing secrets.
-
-## Safety
-- Never store real API keys in repository files.
-- Use .env for local secrets and keep .env out of git.
+Before modifying files, always read:
+1. `.ai/AI_INSTRUCTIONS.md`
+2. `.ai/PROJECT_STATE.md`
+3. `.ai/DECISIONS.md`
+4. `.ai/TASKS.md`

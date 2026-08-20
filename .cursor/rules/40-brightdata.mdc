@@ -1,10 +1,30 @@
 ---
-description: Rules for scraper services, proxy settings, and credential isolation.
-globs: backend/app/scraper/*.py
+description: Controlled Bright Data resource usage, registry pinning, and collector rules.
+globs: backend/app/scraper/*.py, configs/scraper_registry.json
 ---
-# Bright Data Collector Conventions
+# 40-brightdata.mdc — Bright Data Scraper Studio & Resource Policy
 
-- Never expose hardcoded API keys or Scraper IDs in scraper source files.
-- Read credentials from `backend/app/config.py`.
-- Keep mock simulator routines separated so testing can occur without hitting live scraper endpoints.
-- If selectors or response structures are modified, test validation errors using the `inject_errors` switch in the tests.
+Applies to: `backend/app/scraper/*`, `configs/scraper_registry.json`
+
+---
+
+## BRIGHT DATA RESOURCE WORKFLOW
+
+Follow this controlled progression to conserve hackathon scraping credits:
+
+```text
+Check Registry ➔ Reuse Collector ➔ Validate Input ➔ Controlled Trigger ➔ Inspect Result ➔ Save Sample ➔ Develop via Fixture
+```
+
+---
+
+## RULES
+
+1. **Registry Pinning**: Always read approved collectors from `configs/scraper_registry.json`. Do not invent new Collector IDs (`c_*`) without recording them in the registry.
+2. **Never Expose Credentials**: Read `BRIGHT_DATA_API_KEY` and `BRIGHT_DATA_ZONE` strictly from environment configuration (`backend/app/config.py`).
+3. **Fixture-First Development**: Develop normalizers and UI components using local sample JSON files (`data/samples/`, `data/fixtures/`) rather than making live scraper API calls.
+4. **MVP Source Focus**: Focus data collection on the 3 MVP source groups:
+   - Developer activity (GitHub)
+   - Hiring activity (Job Boards)
+   - Product/News updates (Website / News)
+5. **No Unvalidated Ingestion**: All Bright Data payloads must pass through the Health Validator (`validator.py`) before entering downstream processing.
