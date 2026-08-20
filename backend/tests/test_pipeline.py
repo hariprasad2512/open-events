@@ -7,13 +7,13 @@ import pandas as pd
 from datetime import datetime
 from unittest.mock import MagicMock
 
-from backend.database import init_db, get_job, get_items_by_job, get_db_connection, DB_PATH
-from backend.scraper.collector import collect_raw_dataset
-from backend.scraper.validator import validate_item_schema, run_self_healing
-from backend.processor.normalizer import normalize_dataset
-from backend.processor.scoring import score_items
-from backend.main import trigger_scrape, check_job, get_dataset
-from backend.orchestrator import run_pipeline
+from app.database import init_db, get_job, get_items_by_job, get_db_connection, DB_PATH
+from app.scraper.collector import collect_raw_dataset
+from app.scraper.validator import validate_item_schema, run_self_healing
+from app.processor.normalizer import normalize_dataset
+from app.processor.scoring import score_items
+from app.main import trigger_scrape, check_job, get_dataset
+from app.orchestrator import run_pipeline
 
 class TestDataIntelligencePipeline(unittest.TestCase):
     
@@ -37,7 +37,7 @@ class TestDataIntelligencePipeline(unittest.TestCase):
 
     def test_database_crud(self):
         """Tests job creation, retrieval, and status updates in SQLite."""
-        from backend.database import create_job, update_job_status
+        from app.database import create_job, update_job_status
         job_id = "test_job_123"
         create_job(job_id, "Test Target")
         

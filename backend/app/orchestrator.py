@@ -2,17 +2,17 @@ import uuid
 import logging
 import asyncio
 from datetime import datetime
-from backend.database import (
+from app.database import (
     create_job,
     update_job_status,
     save_scored_items,
     persist_snapshot,
     get_items_by_job
 )
-from backend.scraper.collector import collect_raw_dataset
-from backend.scraper.validator import validate_item_schema, run_self_healing
-from backend.processor.normalizer import normalize_dataset
-from backend.processor.scoring import score_items
+from app.scraper.collector import collect_raw_dataset
+from app.scraper.validator import validate_item_schema, run_self_healing
+from app.processor.normalizer import normalize_dataset
+from app.processor.scoring import score_items
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)

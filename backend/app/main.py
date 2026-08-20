@@ -2,8 +2,8 @@ import uuid
 from datetime import datetime
 from fastapi import FastAPI, BackgroundTasks, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from backend.database import init_db, get_job, get_items_by_job, get_historical_metrics
-from backend.orchestrator import run_pipeline, start_periodic_scheduler
+from app.database import init_db, get_job, get_items_by_job, get_historical_metrics
+from app.orchestrator import run_pipeline, start_periodic_scheduler
 
 app = FastAPI(title="Scrape Verse Backend", version="0.1.0")
 
@@ -34,7 +34,7 @@ def trigger_scrape(target: str, background_tasks: BackgroundTasks, inject_errors
     Scrape Trigger endpoint: POST /dca/trigger
     Kicks off collector control service in the background.
     """
-    from backend.database import create_job
+    from app.database import create_job
     job_id = f"job_{uuid.uuid4().hex[:8]}"
     create_job(job_id, target)
     
