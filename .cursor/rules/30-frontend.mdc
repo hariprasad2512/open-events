@@ -1,0 +1,10 @@
+---
+description: React, Next.js, and TypeScript frontend code conventions.
+globs: frontend/**/*.{js,jsx,ts,tsx}, frontend/package.json
+---
+# Frontend Conventions
+
+- **Component Design**: Use functional components with typed props.
+- **Hooks**: Isolate API fetches into custom hooks or custom API client methods in `frontend/src/lib/api.ts`.
+- **Layouts**: Use Tailwind CSS for spacing and responsive design. Follow Lucide icons for UI symbols.
+- **Strict Typing**: Avoid using `any` types; define structural interfaces for scraped items matching API payloads.

@@ -1,0 +1,11 @@
+---
+description: Architectural map guidelines and pipeline flow instructions.
+globs: docs/*.md, docs/**/*.png
+---
+# Architectural Conventions
+
+- The flow of raw data must go: Scraper Trigger -> Collector -> Health Validator (with Self-Healing fallback) -> Normalizer -> Intelligence Scoring -> Time-Series DB.
+- Any change to the API payload shape must update `docs/mock_schema.json` and `docs/api-contract.md` first.
+- Keep the components decoupled:
+  - Scraper logic stays in `backend/app/scraper/`
+  - Processing logic stays in `backend/app/processor/`

@@ -1,0 +1,10 @@
+---
+description: Rules for scraper services, proxy settings, and credential isolation.
+globs: backend/app/scraper/*.py
+---
+# Bright Data Collector Conventions
+
+- Never expose hardcoded API keys or Scraper IDs in scraper source files.
+- Read credentials from `backend/app/config.py`.
+- Keep mock simulator routines separated so testing can occur without hitting live scraper endpoints.
+- If selectors or response structures are modified, test validation errors using the `inject_errors` switch in the tests.

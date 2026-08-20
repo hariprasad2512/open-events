@@ -1,0 +1,10 @@
+---
+description: Python, FastAPI, Pandas, and SQLite coding guidelines.
+globs: backend/**/*.py, backend/requirements.txt
+---
+# Backend Conventions
+
+- **Code Standard**: Follow PEP 8 guidelines.
+- **FastAPI**: Declare types for all path parameters, query parameters, and route responses. Use BackgroundTasks for long-running operations.
+- **Database**: Use connections dynamically loaded from environment configurations. Manage SQLite resource handles cleanly.
+- **Tests**: Always run `python -m unittest` to verify logic integrity before committing code. Keep test scripts under `backend/tests/`.
