@@ -35,10 +35,10 @@ Before making changes, determine the current project state from the repository.
 
 Read these files in this order when they exist:
 
-1. `AI_INSTRUCTIONS.md`
-2. `PROJECT_STATE.md`
-3. `DECISIONS.md`
-4. `TASKS.md`
+1. `.ai/AI_INSTRUCTIONS.md`
+2. `.ai/PROJECT_STATE.md`
+3. `.ai/DECISIONS.md`
+4. `.ai/TASKS.md`
 5. relevant files under `docs/`
 6. relevant source code
 7. relevant schemas/configuration

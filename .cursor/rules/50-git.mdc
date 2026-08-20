@@ -1,10 +1,40 @@
 ---
-description: Branching, PRs, and commit guidelines.
+description: Branching, commit conventions, and mandatory repository update protocol.
 globs: .github/**/*, CONTRIBUTING.md
 ---
-# Git Conventions
+# 50-git.mdc — Git Workflow & Mandatory Update Protocol
 
-- Never commit directly to `main`.
-- Use descriptive branch names prefixed with developer names or features (e.g., `pranav/repo-env-init`).
-- Write commits using Conventional Commit labels: `feat:`, `fix:`, `docs:`, `chore:`.
-- Ensure all CI tests pass before submitting and merging pull requests.
+---
+
+## 1. PRE-TASK WORKFLOW
+
+Before starting work:
+1. Inspect branch status: `git status`, `git branch`
+2. Never work directly on `main`. Use focused feature branches (`feat/...`, `fix/...`, `docs/...`).
+
+---
+
+## 2. MANDATORY REPOSITORY UPDATE PROTOCOL
+
+Whenever an agent makes changes, it must evaluate and update the affected documentation files:
+
+| If this changed | Update |
+|---|---|
+| Task completed or added | `.ai/TASKS.md` |
+| Current implementation status | `.ai/PROJECT_STATE.md` |
+| Architectural decision made | `.ai/DECISIONS.md` |
+| System architecture | `docs/architecture.md` |
+| Data structure / payload | `schemas/*` + `docs/data-contract.md` |
+| API endpoint / resource | `docs/api-contract.md` |
+| Environment variable | `.env.example` |
+| Dependencies / setup | `requirements.txt` / `package.json` + `README.md` |
+
+---
+
+## 3. PRE-COMMIT CHECKLIST
+
+Before committing code:
+- [ ] Review diff (`git diff`)
+- [ ] Run test suite (`$env:PYTHONPATH="backend"; python -m unittest backend/tests/test_pipeline.py`)
+- [ ] Ensure no API keys or `.env` files are staged
+- [ ] Use Conventional Commit messages (`feat:`, `fix:`, `docs:`, `chore:`)

@@ -1,10 +1,18 @@
 ---
-description: React, Next.js, and TypeScript frontend code conventions.
+description: React, Next.js, and TypeScript frontend development rules.
 globs: frontend/**/*.{js,jsx,ts,tsx}, frontend/package.json
 ---
-# Frontend Conventions
+# 30-frontend.mdc — Frontend Development & API Integration Rules
 
-- **Component Design**: Use functional components with typed props.
-- **Hooks**: Isolate API fetches into custom hooks or custom API client methods in `frontend/src/lib/api.ts`.
-- **Layouts**: Use Tailwind CSS for spacing and responsive design. Follow Lucide icons for UI symbols.
-- **Strict Typing**: Avoid using `any` types; define structural interfaces for scraped items matching API payloads.
+Applies to: `frontend/**`
+
+---
+
+## FRONTEND RULES
+
+1. **API Contract Alignment**: All frontend API calls must consume resources specified in `docs/api-contract.md` (`/startups`, `/signals`, `/history`, `/traction`, `/insights`).
+2. **Centralized Fetch Wrapper**: Keep fetch logic centralized in `frontend/src/lib/api.ts`.
+3. **No Direct Scraper Requests**: The frontend must never call Bright Data endpoints directly.
+4. **Mock Fixture Conformance**: Local mock data used for UI development must adhere to `schemas/` and `data/samples/`.
+5. **No Invented Fields**: Do not invent new UI payload fields without updating `docs/api-contract.md` first.
+6. **User Feedback States**: Ensure UI handles loading, error, and empty result states gracefully.

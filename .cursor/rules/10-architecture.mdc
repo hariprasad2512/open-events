@@ -1,11 +1,25 @@
 ---
-description: Architectural map guidelines and pipeline flow instructions.
+description: Architectural map guidelines, layer boundaries, and contract protection rules.
 globs: docs/*.md, docs/**/*.png
 ---
-# Architectural Conventions
+# 10-architecture.mdc — Layer Boundaries & Contract Protection
 
-- The flow of raw data must go: Scraper Trigger -> Collector -> Health Validator (with Self-Healing fallback) -> Normalizer -> Intelligence Scoring -> Time-Series DB.
-- Any change to the API payload shape must update `docs/mock_schema.json` and `docs/api-contract.md` first.
-- Keep the components decoupled:
-  - Scraper logic stays in `backend/app/scraper/`
-  - Processing logic stays in `backend/app/processor/`
+The system is organized into strict architectural boundaries:
+
+```text
+Frontend
+    ↕ API Contract (docs/api-contract.md)
+Backend
+    ↕ Data Contract (docs/data-contract.md)
+Scraper / Bright Data Cloud
+```
+
+---
+
+## ARCHITECTURAL RULES
+
+1. **Frontend Isolation**: The frontend never directly consumes raw scraper output. It consumes processed intelligence from application API routes.
+2. **Scoring Isolation**: The scoring engine operates on normalized signal data, never on Bright Data raw response shapes.
+3. **Pipeline Data Flow**: `RAW DATA ➔ VALIDATE ➔ NORMALIZE ➔ HISTORICAL STORAGE ➔ INTELLIGENCE ➔ API ➔ FRONTEND`
+4. **Architecture Changes**: Any architectural modification requires updating `docs/architecture.md` before or alongside implementation.
+5. **Cross-Layer Integrity**: When changing a data format or route, update `docs/data-contract.md`, `docs/api-contract.md`, schemas, and affected tests together.
