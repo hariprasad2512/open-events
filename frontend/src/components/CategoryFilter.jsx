@@ -1,29 +1,12 @@
+import React from 'react';
 import { ALL_CATEGORIES, getCategoryMeta } from '../lib/constants.js';
-import {
-  IconMusic,
-  IconTheatre,
-  IconWorkshops,
-  IconSports,
-  IconFood,
-  IconTalks,
-  IconNightlife,
-  IconFamily,
-  IconExhibitions,
-  IconSparkles
-} from './Icons.jsx';
+import { SparklesIcon, MusicIcon, PaletteIcon, FilterIcon } from './Icons.jsx';
 
-function renderCategoryIcon(iconType) {
-  switch (iconType) {
-    case 'music': return <IconMusic className="w-3.5 h-3.5" />;
-    case 'theatre': return <IconTheatre className="w-3.5 h-3.5" />;
-    case 'workshops': return <IconWorkshops className="w-3.5 h-3.5" />;
-    case 'sports': return <IconSports className="w-3.5 h-3.5" />;
-    case 'food': return <IconFood className="w-3.5 h-3.5" />;
-    case 'nightlife': return <IconNightlife className="w-3.5 h-3.5" />;
-    case 'family': return <IconFamily className="w-3.5 h-3.5" />;
-    case 'exhibitions': return <IconExhibitions className="w-3.5 h-3.5" />;
-    default: return <IconTalks className="w-3.5 h-3.5" />;
-  }
+function renderCategoryIcon(cat) {
+  const c = (cat || '').toLowerCase();
+  if (c.includes('music')) return <MusicIcon className="w-3.5 h-3.5" />;
+  if (c.includes('art') || c.includes('theatre') || c.includes('exhibition')) return <PaletteIcon className="w-3.5 h-3.5" />;
+  return <SparklesIcon className="w-3.5 h-3.5" />;
 }
 
 export default function CategoryFilter({ activeCategory, onChange }) {
@@ -36,8 +19,8 @@ export default function CategoryFilter({ activeCategory, onChange }) {
         className={`pill ${activeCategory === null ? 'active' : ''}`}
         onClick={() => onChange(null)}
       >
-        <IconSparkles className="w-3.5 h-3.5" />
-        All Events
+        <SparklesIcon className="w-3.5 h-3.5" />
+        <span>All Events</span>
       </button>
 
       {ALL_CATEGORIES.map(cat => {
@@ -53,8 +36,8 @@ export default function CategoryFilter({ activeCategory, onChange }) {
             onClick={() => onChange(isActive ? null : cat)}
             style={isActive ? { borderColor: meta.color, background: meta.bg } : {}}
           >
-            {renderCategoryIcon(meta.iconType)}
-            {cat}
+            {renderCategoryIcon(cat)}
+            <span>{cat}</span>
           </button>
         );
       })}
