@@ -1,24 +1,27 @@
 {
   "collectors": [
     {
-      "name": "github_startup_signals",
-      "collector_id": "c_9f81a7b4",
-      "source": "github",
-      "purpose": "Collect developer activity, stars, and contributors",
+      "name": "fullhyd_events_collector",
+      "collector_id": "c_fullhyd_events",
+      "source": "FullHyd",
+      "target_url": "https://events.fullhyderabad.com",
+      "purpose": "Scrapes dance, music, theatre, arts, sports, talks, workshops, tech, food listings",
       "status": "APPROVED"
     },
     {
-      "name": "job_activity_signals",
-      "collector_id": "c_job_boards",
-      "source": "job_boards",
-      "purpose": "Collect hiring openings and engineering roles",
+      "name": "hydhub_events_collector",
+      "collector_id": "c_hydhub_events",
+      "source": "HydHub",
+      "target_url": "https://hydhub.in",
+      "purpose": "Scrapes general events, meetups, workshops, concerts",
       "status": "APPROVED"
     },
     {
-      "name": "news_product_signals",
-      "collector_id": "c_news_source",
-      "source": "news",
-      "purpose": "Collect product updates and funding announcements",
+      "name": "aroundu_events_collector",
+      "collector_id": "c_aroundu_events",
+      "source": "AroundU",
+      "target_url": "https://aroundu.in/city/hyderabad",
+      "purpose": "Scrapes neighborhood community meetups (Jubilee Hills, Gachibowli, Hitech City)",
       "status": "APPROVED"
     }
   ]

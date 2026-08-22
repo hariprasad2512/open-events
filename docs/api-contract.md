@@ -1,106 +1,45 @@
 # API Contract
 
-> Defines the public application API contract between the backend and frontend.
-
-The API exposes processed application data. It does not expose raw Bright Data scraper responses directly to the frontend.
-
----
-
-# 1. API Principles
-
-The API should:
-- expose stable resource-oriented responses
-- hide source-specific scraper complexity
-- return normalized and processed data
-- preserve source attribution where useful
-- provide historical context
-- expose explainable traction insights
-- return predictable error responses
-
----
-
-# 2. API Base
+> Public Application API Contract for Scrapeverse — City Leisure Events Aggregator.
 
 Base URL: `http://localhost:8000`
 
 ---
 
-# 3. Endpoints
+# Endpoints
 
-### 3.1 `GET /health`
-Returns application health information.
-Response:
+### 1. `GET /health`
+Returns application status.
 ```json
-{
-  "status": "healthy"
-}
+{ "status": "healthy" }
 ```
 
 ---
 
-### 3.2 `GET /startups`
-Returns list of available startups.
-Query Params: `search`, `limit`, `offset`
+### 2. `GET /events`
+Returns list of normalized and de-duplicated city leisure events.  
+Query Params: `category` (optional), `area` (optional), `date` (optional), `limit` (optional).
+
 Response:
 ```json
 {
-  "items": [
+  "total": 1,
+  "events": [
     {
-      "startup_id": "startup_001",
-      "startup_name": "Example AI",
-      "website": "https://example.ai",
-      "latest_traction_score": 85,
-      "traction_change": 9
-    }
-  ],
-  "total": 1
-}
-```
-
----
-
-### 3.3 `GET /startups/{startup_id}`
-Returns primary profile for a startup.
-Response:
-```json
-{
-  "startup_id": "startup_001",
-  "startup_name": "Example AI",
-  "website": "https://example.ai",
-  "description": "Example startup description.",
-  "latest_snapshot_at": "2026-08-20T10:00:00Z",
-  "traction": {
-    "score": 85,
-    "change": 9,
-    "calculated_at": "2026-08-20T10:00:00Z"
-  }
-}
-```
-
----
-
-### 3.4 `GET /startups/{startup_id}/signals`
-Returns latest normalized signals.
-Response:
-```json
-{
-  "startup_id": "startup_001",
-  "signals": [
-    {
-      "signal_category": "developer_activity",
-      "metric": "github_stars",
-      "value": 12500,
-      "unit": "count",
-      "source": "github",
-      "observed_at": "2026-08-20T10:00:00Z"
-    },
-    {
-      "signal_category": "developer_activity",
-      "metric": "github_contributors",
-      "value": 85,
-      "unit": "count",
-      "source": "github",
-      "observed_at": "2026-08-20T10:00:00Z"
+      "event_id": "evt_a8f9021b",
+      "title": "Sunburn Hyderabad DJ Night",
+      "category": "Music",
+      "date": "2026-08-28",
+      "time": "20:00",
+      "venue": "Gachibowli Stadium",
+      "area": "Gachibowli",
+      "price": "₹999 onwards",
+      "description": "Live DJ concert featuring international artists.",
+      "sources": [
+        { "site_name": "FullHyd", "source_url": "https://events.fullhyderabad.com/sunburn" },
+        { "site_name": "HydHub", "source_url": "https://hydhub.in/events/sunburn" }
+      ],
+      "scraped_at": "2026-08-22T12:00:00Z"
     }
   ]
 }
@@ -108,110 +47,40 @@ Response:
 
 ---
 
-### 3.5 `GET /startups/{startup_id}/history`
-Returns historical observations for time-series visualizations.
-Query Params: `metric`, `category`, `from`, `to`
-Response:
-```json
-{
-  "startup_id": "startup_001",
-  "history": [
-    {
-      "metric": "github_stars",
-      "source": "github",
-      "observations": [
-        { "value": 8000, "observed_at": "2026-08-01T00:00:00Z" },
-        { "value": 9200, "observed_at": "2026-08-08T00:00:00Z" },
-        { "value": 10800, "observed_at": "2026-08-15T00:00:00Z" },
-        { "value": 12500, "observed_at": "2026-08-20T00:00:00Z" }
-      ]
-    }
-  ]
-}
-```
+### 3. `GET /events/{event_id}`
+Returns details for a single event record by ID.
 
 ---
 
-### 3.6 `GET /startups/{startup_id}/traction`
-Returns current traction analysis.
-Response:
+### 4. `GET /events/digest`
+Returns the weekly city digest summary:
 ```json
 {
-  "startup_id": "startup_001",
-  "score": 85,
-  "previous_score": 76,
-  "change": 9,
-  "calculated_at": "2026-08-20T10:00:00Z",
-  "signal_summary": [
-    { "category": "developer_activity", "score": 88 },
-    { "category": "hiring_activity", "score": 92 },
-    { "category": "product_activity", "score": 84 }
-  ]
-}
-```
-
----
-
-### 3.7 `GET /startups/{startup_id}/insights`
-Returns explainable contributors behind the startup's traction.
-Response:
-```json
-{
-  "startup_id": "startup_001",
-  "insights": {
-    "positive": [
-      {
-        "signal_category": "developer_activity",
-        "metric": "github_contributors",
-        "impact": "positive",
-        "change": 40,
-        "reason": "Contributor activity increased by 40%"
-      },
-      {
-        "signal_category": "hiring_activity",
-        "metric": "open_positions",
-        "impact": "positive",
-        "change": 50,
-        "reason": "Open positions increased from 12 to 18"
-      }
-    ],
-    "negative": [
-      {
-        "signal_category": "community_activity",
-        "metric": "community_mentions",
-        "impact": "negative",
-        "change": -5,
-        "reason": "Community activity decreased by 5%"
-      }
-    ],
-    "neutral": []
+  "city": "Hyderabad",
+  "period": "This Week",
+  "total_events": 45,
+  "unique_venues": 18,
+  "category_breakdown": {
+    "Music": 12,
+    "Workshops & Classes": 15,
+    "Talks & Meetups": 8,
+    "Theatre & Arts": 10
+  },
+  "dedup_summary": {
+    "raw_scraped_count": 68,
+    "merged_unique_count": 45,
+    "duplicates_removed": 23
   }
 }
 ```
 
 ---
 
-### 3.8 `GET /startups/trending`
-Returns startups showing strongest recent traction changes. Query Params: `limit`, `period`.
+### 5. `GET /events/categories`
+Returns the list of supported categories in the Unified Category Taxonomy.
 
 ---
 
-### 3.9 Legacy / Diagnostic Endpoints
-- `POST /dca/trigger`: Triggers background scraping.
-- `GET /dca/jobs/{job_id}`: Job execution status.
-- `GET /dca/dataset/{job_id}`: Raw and processed job output.
-- `GET /api/metrics`: Aggregate time-series metric snapshots.
-
----
-
-# 4. Error Contract
-
-```json
-{
-  "error": {
-    "code": "STARTUP_NOT_FOUND",
-    "message": "The requested startup does not exist."
-  }
-}
-```
-Error codes include: `STARTUP_NOT_FOUND`, `INVALID_REQUEST`, `VALIDATION_ERROR`, `INTERNAL_ERROR`, `SERVICE_UNAVAILABLE`.
+### 6. `POST /dca/trigger`
+Triggers an event scraping run in a background task.  
+Query Params: `target` (e.g., `FullHyd`, `HydHub`, `AroundU`), `inject_errors` (bool).

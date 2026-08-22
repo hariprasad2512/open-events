@@ -25,28 +25,32 @@ def init_db():
     )
     """)
     
-    # Scraped items table
+    # De-duplicated merged events table
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS scraped_items (
-        id TEXT PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS events (
+        event_id TEXT PRIMARY KEY,
         job_id TEXT NOT NULL,
         title TEXT NOT NULL,
-        source TEXT NOT NULL,
-        url TEXT NOT NULL,
-        score REAL NOT NULL,
-        tags TEXT NOT NULL, -- JSON list of tags
+        category TEXT NOT NULL,
+        date TEXT NOT NULL,
+        time TEXT,
+        venue TEXT NOT NULL,
+        area TEXT,
+        price TEXT,
+        description TEXT,
+        sources TEXT NOT NULL, -- JSON list of {site_name, source_url}
         scraped_at TEXT NOT NULL,
-        region TEXT,
         FOREIGN KEY (job_id) REFERENCES jobs (id)
     )
     """)
     
     # Time-series metrics history table
+    cursor.execute("DROP TABLE IF EXISTS metrics_history")
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS metrics_history (
         timestamp TEXT PRIMARY KEY,
-        total_items INTEGER NOT NULL,
-        average_score REAL NOT NULL
+        total_events INTEGER NOT NULL,
+        unique_venues INTEGER NOT NULL
     )
     """)
     
@@ -75,43 +79,43 @@ def update_job_status(job_id: str, status: str, error_message: str = None) -> No
     conn.commit()
     conn.close()
 
-def save_scored_items(job_id: str, items: list) -> None:
+def save_merged_events(job_id: str, events: list) -> None:
     conn = get_db_connection()
     cursor = conn.cursor()
-    for item in items:
-        # Check if tags is a list, convert to json string
-        tags_json = json.dumps(item.get("tags", []))
-        metadata = item.get("metadata", {})
-        scraped_at = metadata.get("scrapedAt", datetime.utcnow().isoformat() + "Z")
-        region = metadata.get("region", "unknown")
-        
+    for event in events:
+        sources_json = json.dumps(event.get("sources", []))
         cursor.execute(
             """
-            INSERT OR REPLACE INTO scraped_items (id, job_id, title, source, url, score, tags, scraped_at, region)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT OR REPLACE INTO events (
+                event_id, job_id, title, category, date, time, venue, area, price, description, sources, scraped_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
-                item.get("id"),
+                event.get("event_id"),
                 job_id,
-                item.get("title"),
-                item.get("source"),
-                item.get("url"),
-                item.get("score", 0.0),
-                tags_json,
-                scraped_at,
-                region
+                event.get("title"),
+                event.get("category"),
+                event.get("date"),
+                event.get("time", ""),
+                event.get("venue"),
+                event.get("area", ""),
+                event.get("price", "Free"),
+                event.get("description", ""),
+                sources_json,
+                event.get("scraped_at", datetime.utcnow().isoformat() + "Z")
             )
         )
     conn.commit()
     conn.close()
 
-def persist_snapshot(total_items: int, average_score: float) -> None:
+def persist_snapshot(total_events: int, unique_venues: int) -> None:
     conn = get_db_connection()
     cursor = conn.cursor()
     now = datetime.utcnow().isoformat() + "Z"
     cursor.execute(
-        "INSERT OR REPLACE INTO metrics_history (timestamp, total_items, average_score) VALUES (?, ?, ?)",
-        (now, total_items, average_score)
+        "INSERT OR REPLACE INTO metrics_history (timestamp, total_events, unique_venues) VALUES (?, ?, ?)",
+        (now, total_events, unique_venues)
     )
     conn.commit()
     conn.close()
@@ -126,28 +130,28 @@ def get_job(job_id: str) -> dict:
         return dict(row)
     return None
 
-def get_items_by_job(job_id: str) -> list:
+def get_all_events() -> list:
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM scraped_items WHERE job_id = ?", (job_id,))
+    cursor.execute("SELECT * FROM events ORDER BY date ASC")
     rows = cursor.fetchall()
     conn.close()
     
-    items = []
+    events = []
     for row in rows:
-        item_dict = dict(row)
-        item_dict["tags"] = json.loads(item_dict["tags"])
-        item_dict["metadata"] = {
-            "scrapedAt": item_dict.pop("scraped_at"),
-            "region": item_dict.pop("region")
-        }
-        items.append(item_dict)
-    return items
+        event_dict = dict(row)
+        event_dict["sources"] = json.loads(event_dict["sources"])
+        events.append(event_dict)
+    return events
 
-def get_historical_metrics() -> list:
+def get_event_by_id(event_id: str) -> dict:
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM metrics_history ORDER BY timestamp ASC")
-    rows = cursor.fetchall()
+    cursor.execute("SELECT * FROM events WHERE event_id = ?", (event_id,))
+    row = cursor.fetchone()
     conn.close()
-    return [dict(row) for row in rows]
+    if row:
+        event_dict = dict(row)
+        event_dict["sources"] = json.loads(event_dict["sources"])
+        return event_dict
+    return None

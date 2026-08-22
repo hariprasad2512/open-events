@@ -1,108 +1,50 @@
 # TASKS.md
 
-> Single active work board for Scrape Verse.
+> Single active work board for Scrapeverse — City Leisure Events Aggregator.
 
 ---
 
-# P0 — Data Contracts
-- [x] Define raw scraper output boundary
-- [x] Define normalized startup schema
-- [x] Create initial schema files (`schemas/`)
-- [x] Create representative sample data (`data/samples/`)
-- [x] Create healthy fixture (`data/fixtures/valid_result.json`)
-- [x] Create missing-field fixture (`data/fixtures/missing_required_field.json`)
-- [x] Create malformed-response fixture (`data/fixtures/malformed_result.json`)
-- [x] Create empty-results fixture (`data/fixtures/empty_result.json`)
-- [x] Write `docs/data-contract.md`
+# Phase 0 — Pre-Hackathon Prep & Setup
+- [x] Finalize 3 target sites (FullHyd, HydHub, AroundU) for MVP
+- [x] Define unified event data schema & category taxonomy
+- [x] Establish repository governance (.ai/) & agent rules
+- [x] Define data contract (`docs/data-contract.md`)
+- [x] Define API contract (`docs/api-contract.md`)
 
 ---
 
-# P0 — API Contracts
-- [x] Define initial API resources
-- [x] Define startup profile response
-- [x] Define startup signals response
-- [x] Define historical snapshots response
-- [x] Define traction score response
-- [x] Define health/status response
-- [x] Write `docs/api-contract.md`
+# Phase 1 — Custom Scrapers & Collector Service
+- [x] Register collectors in `configs/scraper_registry.json` (`fullhyd_events`, `hydhub_events`, `aroundu_events`)
+- [x] Implement collector simulator in `backend/app/scraper/collector.py`
+- [x] Implement Health Validator & AI Self-Healing simulator in `backend/app/scraper/validator.py`
+- [x] Test error-injection scenarios for missing fields/broken selectors
 
 ---
 
-# P0 — Hackathon Preparation
-- [x] Create `docs/hackathon.md`
-- [x] Record hackathon requirements
-- [x] Define required Bright Data usage
-- [x] Define self-healing demonstration
-- [x] Define repository reproducibility requirements
-- [x] Define final submission checklist
-- [x] Define demo requirements
+# Phase 2 — Normalize & Map
+- [x] Implement event normalizer in `backend/app/processor/normalizer.py`
+- [x] Parse inconsistent date/time text formats into ISO `YYYY-MM-DD` and `HH:MM`
+- [x] Map raw source category labels to Unified Category Taxonomy (`Music`, `Workshops & Classes`, etc.)
 
 ---
 
-# P0 — Bright Data Preparation
-- [x] Create `docs/brightdata.md`
-- [x] Set up Bright Data configuration module (`config.py`)
-- [x] Define scraper target simulator
-- [x] Record Collector ID (`c_9f81a7b4`)
-- [x] Add collector to `configs/scraper_registry.json`
-- [x] Save representative output
+# Phase 3 — De-duplicate Engine
+- [x] Implement fuzzy de-duplication in `backend/app/processor/deduplicator.py`
+- [x] Token similarity matching on `title` + `date` + `venue`
+- [x] Merge matching event records with combined `sources` list (`[{site_name, source_url}]`)
+- [x] Log deduplication stats for demo presentation
 
 ---
 
-# P1 — Product Definition
-## Startup Sources
-Potential signal categories:
-- [x] Developer activity source (GitHub)
-- [x] Hiring activity source (Job Boards)
-- [x] Product activity source (Startup website / Product Hunt)
-- [x] News/announcement source
-
-## Source Selection
-- [x] Select MVP source 1: GitHub (Stars, Contributors, Commits)
-- [x] Select MVP source 2: Job Boards (Openings, Engineering roles)
-- [x] Select MVP source 3: News / Competitor updates
+# Phase 4 — Database, API & Test Suite
+- [x] Update SQLite persistence in `backend/app/database.py` for merged event records
+- [x] Update orchestrator pipeline in `backend/app/orchestrator.py`
+- [x] Expose API routes in `backend/app/main.py` (`GET /events`, `GET /events/digest`, `POST /dca/trigger`)
+- [x] Update automated test suite in `backend/tests/test_pipeline.py` (100% pass rate)
 
 ---
 
-# P1 — Backend
-## Foundation
-- [x] Initialize backend application (`backend/app/main.py`)
-- [x] Configure project dependencies (`backend/requirements.txt`)
-- [x] Configure environment loading (`backend/app/config.py`)
-- [x] Add application configuration
-- [x] Add health endpoint (`GET /health`)
-- [x] Add collector trigger endpoint (`POST /dca/trigger`)
-- [x] Add dataset retrieval endpoint (`GET /dca/dataset/{job_id}`)
-- [x] Add historical metrics endpoint (`GET /api/metrics`)
-- [x] Implement Health Validator & AI Self-Healing agent (`backend/app/scraper/validator.py`)
-- [x] Implement Pandas Normalizer (`backend/app/processor/normalizer.py`)
-- [x] Implement Intelligence Scoring engine (`backend/app/processor/scoring.py`)
-- [x] Implement SQLite Time-Series DB persistence (`backend/app/database.py`)
-- [x] Add automated test suite (`backend/tests/test_pipeline.py`)
-
----
-
-# P2 — Frontend Dashboard
-- [ ] Connect React/Next.js dashboard to backend APIs
-- [ ] Implement Startup Discovery list view
-- [ ] Implement Startup Profile view
-- [ ] Render Time-Series trend charts (Recharts)
-- [ ] Render Signal breakdown & Explainable Traction details
-- [ ] Add trigger controls & error-injection toggle for live self-healing demo
-
----
-
-# Task Rules
-
-### Before Starting a Task
-1. Check this file (`.ai/TASKS.md`).
-2. Check `.ai/PROJECT_STATE.md`.
-3. Check `.ai/DECISIONS.md`.
-4. Check relevant documentation under `docs/`.
-
-### When Starting a Task
-Mark status as: `[~] Task in progress`
-
-### When Complete
-Mark status as: `[x] Task completed`  
-Ensure code is committed, tests pass, and docs are updated.
+# Phase 5 — UI & Submission Packaging
+- [ ] Connect frontend Weekly Digest dashboard view
+- [ ] Record end-to-end demo video showing self-healing and deduplication
+- [ ] Finalize submission documentation (`docs/hackathon.md`, `docs/demo.md`)

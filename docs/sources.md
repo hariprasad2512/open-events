@@ -1,34 +1,38 @@
-# MVP Startup Data Sources
+# Target Websites — Hyderabad Pilot
 
-> Defines the primary public web sources used for Startup Traction Intelligence.
-
----
-
-# 1. MVP Sources Selection
-
-To keep the MVP scope focused, the system collects signals from 3 primary sources:
-
-### 1. Developer Activity (GitHub)
-- **Metrics**: `github_stars`, `github_contributors`, `github_commits`
-- **Signal Category**: `developer_activity`
-- **Weight**: 35% of Traction Score
-- **Purpose**: Measures developer engagement and technical velocity.
-
-### 2. Hiring Activity (Job Boards / Careers)
-- **Metrics**: `open_positions`, `engineering_roles`, `new_jobs_this_month`
-- **Signal Category**: `hiring_activity`
-- **Weight**: 35% of Traction Score
-- **Purpose**: Indicates team expansion and business growth.
-
-### 3. Product & News Updates (Website / News / Product Hunt)
-- **Metrics**: `product_releases`, `funding_announcements`, `community_mentions`
-- **Signal Category**: `product_activity` / `public_attention`
-- **Weight**: 30% of Traction Score
-- **Purpose**: Measures public visibility and product launch momentum.
+> Public, privately run city-event listing platforms targeted for Scrapeverse data collection.
 
 ---
 
-# 2. Integration Rules
+# Core MVP Target Sites
 
-- Each source must provide timestamped observations.
-- All scraped source data passes through the Health Validator before entering the Normalization Layer.
+All sites below require no login, contain no personal data/paywalls, are not state/government run, and are not present in Bright Data's pre-built Scrapers Library.
+
+### 1. FullHyd Events
+- **URL**: `https://events.fullhyderabad.com`
+- **Priority**: Core (Build first)
+- **Categories Scraped**: Dance, music, theatre, literary, nightlife, arts, sports, talks, workshops, tech, food, campus.
+
+### 2. HydHub
+- **URL**: `https://hydhub.in`
+- **Priority**: Core
+- **Categories Scraped**: General events, meetups, workshops, concerts, filterable by Today / Weekend / This Week.
+
+### 3. AroundU
+- **URL**: `https://aroundu.in/city/hyderabad`
+- **Priority**: Core
+- **Categories Scraped**: Neighborhood-tagged community meetups (Jubilee Hills, Gachibowli, Hitech City) — sports, hobbies, socials.
+
+---
+
+# Stretch Target Sites
+
+### 4. HighApe
+- **URL**: `https://highape.com/hyderabad`
+- **Priority**: Stretch
+- **Categories Scraped**: Workshops & classes, exhibitions, food & drink, live performances.
+
+### 5. Hyderabad Feed
+- **URL**: `https://hyderabadfeed.com/events`
+- **Priority**: Stretch
+- **Categories Scraped**: Categorized listings with dates/venues — community, sports, music.

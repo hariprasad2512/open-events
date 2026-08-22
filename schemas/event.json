@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EventRecord",
+  "type": "object",
+  "properties": {
+    "event_id": { "type": "string" },
+    "title": { "type": "string" },
+    "category": { 
+      "type": "string",
+      "enum": [
+        "Music",
+        "Theatre & Arts",
+        "Workshops & Classes",
+        "Sports & Outdoors",
+        "Food & Drink",
+        "Talks & Meetups",
+        "Nightlife",
+        "Family / Kids",
+        "Exhibitions"
+      ]
+    },
+    "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "time": { "type": "string" },
+    "venue": { "type": "string" },
+    "area": { "type": "string" },
+    "price": { "type": "string" },
+    "description": { "type": "string" },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "site_name": { "type": "string" },
+          "source_url": { "type": "string" }
+        },
+        "required": ["site_name", "source_url"]
+      }
+    },
+    "scraped_at": { "type": "string", "format": "date-time" }
+  },
+  "required": ["event_id", "title", "category", "date", "venue", "sources", "scraped_at"]
+}

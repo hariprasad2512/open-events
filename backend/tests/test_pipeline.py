@@ -2,173 +2,137 @@ import unittest
 import asyncio
 import os
 import json
-import sqlite3
-import pandas as pd
 from datetime import datetime
-from unittest.mock import MagicMock
 
-from app.database import init_db, get_job, get_items_by_job, get_db_connection, DB_PATH
+from app.database import init_db, get_job, get_all_events, get_db_connection
 from app.scraper.collector import collect_raw_dataset
-from app.scraper.validator import validate_item_schema, run_self_healing
-from app.processor.normalizer import normalize_dataset
-from app.processor.scoring import score_items
-from app.main import trigger_scrape, check_job, get_dataset
+from app.scraper.validator import validate_event_schema, run_self_healing
+from app.processor.normalizer import normalize_events, map_category, parse_date
+from app.processor.deduplicator import deduplicate_events
+from app.main import list_events, get_weekly_digest, trigger_scrape, check_job
 from app.orchestrator import run_pipeline
 
-class TestDataIntelligencePipeline(unittest.TestCase):
+class TestCityEventsPipeline(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        # Initialize database
         init_db()
 
     def setUp(self):
         self.loop = asyncio.get_event_loop()
 
     def tearDown(self):
-        # Clean database tables between tests
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM scraped_items")
+        cursor.execute("DELETE FROM events")
         cursor.execute("DELETE FROM jobs")
         cursor.execute("DELETE FROM metrics_history")
         conn.commit()
         conn.close()
 
-    def test_database_crud(self):
-        """Tests job creation, retrieval, and status updates in SQLite."""
-        from app.database import create_job, update_job_status
-        job_id = "test_job_123"
-        create_job(job_id, "Test Target")
-        
-        job = get_job(job_id)
-        self.assertIsNotNone(job)
-        self.assertEqual(job["target"], "Test Target")
-        self.assertEqual(job["status"], "PENDING")
-        
-        update_job_status(job_id, "RUNNING")
-        job = get_job(job_id)
-        self.assertEqual(job["status"], "RUNNING")
-
     def test_collector_and_error_injection(self):
-        """Tests collector retrieves raw mock data and injects schema errors."""
-        # Test clean collection
-        clean_jobs = collect_raw_dataset("Job Listings", inject_errors=False)
-        self.assertTrue(len(clean_jobs) > 0)
-        self.assertIsNotNone(clean_jobs[0]["source"])
+        """Tests scraper collector produces raw event listings and handles error injection."""
+        fullhyd_clean = collect_raw_dataset("FullHyd", inject_errors=False)
+        self.assertTrue(len(fullhyd_clean) > 0)
+        self.assertIsNotNone(fullhyd_clean[0]["venue_name"])
         
-        # Test collection with injected errors
-        faulty_jobs = collect_raw_dataset("Job Listings", inject_errors=True)
-        self.assertTrue(len(faulty_jobs) > 0)
-        # First item should have missing source
-        self.assertIsNone(faulty_jobs[0]["source"])
+        fullhyd_faulty = collect_raw_dataset("FullHyd", inject_errors=True)
+        self.assertTrue(len(fullhyd_faulty) > 0)
+        self.assertIsNone(fullhyd_faulty[0]["venue_name"])
 
-    def test_health_validator_and_self_healing(self):
-        """Tests validation of clean items and self-healing of faulty items."""
-        # 1. Clean item
-        clean_item = {
-            "id": "item_1",
-            "title": "Data Scientist",
-            "source": "LinkedIn Jobs",
-            "url": "https://linkedin.com/jobs/view/1",
-            "tags": ["AI"],
-            "metadata": {"scrapedAt": "2026-08-20T12:00:00Z", "region": "US"}
-        }
-        errors = validate_item_schema(clean_item)
-        self.assertEqual(len(errors), 0)
-        
-        # 2. Faulty item: missing source & broken selector
+    def test_validator_and_self_healing(self):
+        """Tests health validator diagnoses missing venue and self-healing restores it."""
         faulty_item = {
-            "id": "item_2",
-            "title": "Quantum researcher",
-            "source": "MIT_Tech_Review_Broken_Selector",
-            "url": "https://technologyreview.com/quantum",
-            "tags": None,
-            "metadata": {"scrapedAt": "2026-08-20T12:00:00Z", "region": "US"}
+            "raw_title": "Theatre Festival 2026",
+            "raw_date": "2026-08-28",
+            "venue_name": None,
+            "source_url": "https://events.fullhyderabad.com/ravindra-bharathi"
         }
-        errors = validate_item_schema(faulty_item)
+        errors = validate_event_schema(faulty_item)
         self.assertTrue(len(errors) > 0)
         
-        # Repair the faulty item
-        healed, logs = run_self_healing(faulty_item, errors)
-        self.assertEqual(healed["source"], "MIT Tech Review")
-        self.assertEqual(healed["tags"], ["General"])
-        
-        # Validate repaired item again
-        post_heal_errors = validate_item_schema(healed)
-        self.assertEqual(len(post_heal_errors), 0)
+        healed_item, logs = run_self_healing(faulty_item, errors)
+        self.assertEqual(healed_item["venue_name"], "Ravindra Bharathi Auditorium")
+        self.assertEqual(len(validate_event_schema(healed_item)), 0)
 
-    def test_data_normalizer(self):
-        """Tests Pandas normalizer strips strings and standardizes dates."""
-        raw_items = [
+    def test_normalizer_date_and_taxonomy_mapping(self):
+        """Tests parsing raw date text and mapping categories to Unified Taxonomy."""
+        self.assertEqual(parse_date("28/08/2026"), "2026-08-28")
+        self.assertEqual(map_category("Live Concerts"), "Music")
+        self.assertEqual(map_category("Stage Plays & Arts"), "Theatre & Arts")
+        self.assertEqual(map_category("Tech Workshop"), "Workshops & Classes")
+
+        raw_data = [
             {
-                "id": "item_norm",
-                "title": "  Lead AI Architect   ",
-                "source": " GitHub Jobs ",
-                "url": "HTTP://GITHUB.COM/jobs/view",
-                "tags": [" AI ", "ML "],
-                "metadata": {"scrapedAt": "2026-08-20 12:00:00", "region": "US-West"}
+                "raw_title": " Acoustic Night ",
+                "raw_category": "Live Concerts",
+                "raw_date": "2026-08-31",
+                "raw_time": "Evening",
+                "venue_name": "Hard Rock Cafe",
+                "source_site": "HydHub",
+                "source_url": "https://hydhub.in/events/acoustic"
             }
         ]
-        normalized = normalize_dataset(raw_items)
-        self.assertEqual(normalized[0]["title"], "Lead AI Architect")
-        self.assertEqual(normalized[0]["source"], "GitHub Jobs")
-        self.assertEqual(normalized[0]["url"], "http://github.com/jobs/view")
-        self.assertEqual(normalized[0]["tags"], ["ai", "ml"])
-        self.assertEqual(normalized[0]["metadata"]["region"], "us-west")
+        normalized = normalize_events(raw_data)
+        self.assertEqual(normalized[0]["title"], "Acoustic Night")
+        self.assertEqual(normalized[0]["category"], "Music")
 
-    def test_scoring_engine(self):
-        """Tests dynamic weighting intelligence scoring rules."""
+    def test_fuzzy_deduplication(self):
+        """Tests fuzzy token matching merges duplicate events from different sources."""
         items = [
             {
-                "title": "Regular developer",
-                "source": "generic web scrape",
-                "tags": []
+                "title": "Hyderabad Literary Festival 2026",
+                "category": "Theatre & Arts",
+                "date": "2026-08-28",
+                "time": "18:00",
+                "venue": "Ravindra Bharathi Auditorium",
+                "area": "Lakdikapul",
+                "price": "Free Entry",
+                "description": "Annual literary festival.",
+                "site_name": "FullHyd",
+                "source_url": "https://events.fullhyderabad.com/litfest",
+                "scraped_at": "2026-08-22T12:00:00Z"
             },
             {
-                "title": "Senior AI Resident Engineer",
-                "source": "github jobs",
-                "tags": ["AI", "MLOps"]
+                "title": "Hyderabad Literary & Theatre Festival",
+                "category": "Theatre & Arts",
+                "date": "2026-08-28",
+                "time": "18:00",
+                "venue": "Ravindra Bharathi Auditorium",
+                "area": "Lakdikapul",
+                "price": "Free",
+                "description": "Literary festival.",
+                "site_name": "HydHub",
+                "source_url": "https://hydhub.in/events/litfest",
+                "scraped_at": "2026-08-22T12:00:00Z"
             }
         ]
-        scored = score_items(items)
-        
-        # Regular developer should have baseline generic score (50)
-        self.assertEqual(scored[0]["score"], 50.0)
-        
-        # AI/MLOps Github jobs candidate gets base 85 + 10 (AI tag) + 15 (MLOps tag) + 10 (AI title bonus) = 120, capped at 100
-        self.assertEqual(scored[1]["score"], 100.0)
+        merged, stats = deduplicate_events(items)
+        self.assertEqual(stats["raw_count"], 2)
+        self.assertEqual(stats["merged_count"], 1)
+        self.assertEqual(stats["duplicates_removed"], 1)
+        self.assertEqual(len(merged[0]["sources"]), 2)
 
-    def test_end_to_end_api_endpoints_mocked(self):
-        """Tests full pipeline orchestrator execution and endpoint route functions directly."""
-        mock_bg_tasks = MagicMock()
-        
-        # 1. Trigger job through main route handler
-        trigger_res = trigger_scrape(
-            target="Code Repos", 
-            background_tasks=mock_bg_tasks, 
-            inject_errors=True
+    def test_end_to_end_pipeline_and_api(self):
+        """Tests full pipeline run and API digest endpoints."""
+        res_fullhyd = self.loop.run_until_complete(
+            run_pipeline("job_test_1", "FullHyd", inject_errors=False)
         )
-        self.assertEqual(trigger_res["status"], "triggered")
-        job_id = trigger_res["job_id"]
-        mock_bg_tasks.add_task.assert_called_once()
+        self.assertEqual(res_fullhyd["status"], "success")
         
-        # 2. Run the background pipeline synchronously in test loop
-        pipeline_res = self.loop.run_until_complete(
-            run_pipeline(job_id, "Code Repos", inject_errors=True)
+        res_hydhub = self.loop.run_until_complete(
+            run_pipeline("job_test_2", "HydHub", inject_errors=False)
         )
-        self.assertEqual(pipeline_res["status"], "success")
+        self.assertEqual(res_hydhub["status"], "success")
         
-        # 3. Query job state
-        job_status = check_job(job_id)
-        self.assertEqual(job_status["status"], "COMPLETED_HEALED")
+        # Query list events API
+        events_res = list_events()
+        self.assertTrue(events_res["total"] > 0)
         
-        # 4. Get dataset through route handler
-        dataset_res = get_dataset(job_id)
-        self.assertEqual(dataset_res["status"], "COMPLETED_HEALED")
-        self.assertTrue(len(dataset_res["items"]) > 0)
-        self.assertTrue(dataset_res["summary"]["totalItems"] > 0)
-        self.assertTrue(dataset_res["summary"]["averageScore"] > 0)
+        # Query weekly digest API
+        digest_res = get_weekly_digest()
+        self.assertEqual(digest_res["city"], "Hyderabad")
+        self.assertTrue(digest_res["total_events"] > 0)
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,49 +1,38 @@
 # Hackathon Demo Script
 
-> Step-by-step demonstration script for judging presentations.
+> Step-by-step demonstration script for Scrapeverse — City Leisure Events Aggregator (Hyderabad Pilot).
 
 ---
 
-## Step 1 — Discover
-- Open the Startup Intelligence Dashboard.
-- Show **Trending Startups** list ranked by growth rate:
-  1. Startup A (Score 91, ↑ +15)
-  2. Startup B (Score 87, ↑ +12)
-  3. Startup C (Score 83, ↑ +8)
+## Step 1 — Overview & Target Sources
+- Introduce Scrapeverse: Aggregating leisure events (music, theatre, workshops, meetups, sports, food, art) for Hyderabad across FullHyd, HydHub, and AroundU.
 
 ---
 
-## Step 2 — Investigate
-- Click on **Startup A** to open its profile view.
-- Highlight **Traction Score: 91 / 100** and change indicator (`+15`).
+## Step 2 — Custom Scraper Studio Collection
+- Show custom scrapers built in Bright Data Scraper Studio for FullHyd, HydHub, and AroundU.
+- Demonstrate trigger endpoint: `POST /dca/trigger?target=FullHyd`.
 
 ---
 
-## Step 3 — Show History
-- Display the time-series trend line chart (`62 → 68 → 76 → 84 → 91`).
-- Explain: *"This isn't a static score snapshot—our pipeline tracks weekly changes over time."*
+## Step 3 — Health Validation & Self-Healing
+- Trigger run with selector glitch simulation: `POST /dca/trigger?target=HydHub&inject_errors=true`.
+- Show Health Validator detecting broken date/area selector ➔ AI Self-Healing agent repairing extraction ➔ Re-validation passing (`COMPLETED_HEALED`).
 
 ---
 
-## Step 4 — Explain
-- Open **Why This Score?** explainability breakdown:
-  - `+ GitHub contributors increased 40%`
-  - `+ Engineering hiring increased 60%`
-  - `+ Product releases increased`
-  - `- Community mentions remained flat`
+## Step 4 — Normalization & Unified Taxonomy Mapping
+- Show raw site outputs transformed into the Unified Event Schema (`event_id`, `title`, `category`, `date`, `time`, `venue`, `area`, `price`, `sources`, `scraped_at`).
+- Show raw categories mapped to standard taxonomy (`Music`, `Workshops & Classes`, `Sports & Outdoors`, etc.).
 
 ---
 
-## Step 5 — Show the Scraper Pipeline
-- Demonstrate data provenance:
-  `Public Web` ➔ `Bright Data Cloud` ➔ `Collector Control` ➔ `Health Validator` ➔ `Normalizer` ➔ `Time-Series DB` ➔ `API`
+## Step 5 — Cross-Source Fuzzy De-duplication
+- Demonstrate fuzzy matching on `title` + `date` + `venue`.
+- Show duplicate events across FullHyd and HydHub merged into a single event record with a combined `sources` array (`[{site_name: "FullHyd"}, {site_name: "HydHub"}]`).
 
 ---
 
-## Step 6 — Demonstrate Recovery (Self-Healing)
-- Run trigger with error injection: `POST /dca/trigger?target=Job+Boards&inject_errors=true`.
-- Show that:
-  1. Health Validator detects missing selector/field.
-  2. AI Self-Healing agent diagnoses and repairs extraction pattern.
-  3. Pipeline re-validates and completes (`COMPLETED_HEALED`).
-  4. Downstream data continues to flow cleanly!
+## Step 6 — Weekly Digest API & Output
+- Query `GET /events/digest`.
+- Show total events aggregated, unique venues, category breakdown, and deduplication statistics ("23 duplicates removed").

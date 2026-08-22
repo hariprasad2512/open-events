@@ -1,0 +1,64 @@
+[
+  {
+    "event_id": "evt_fullhyd_01",
+    "title": "Hyderabad Literary & Theatre Festival",
+    "category": "Theatre & Arts",
+    "date": "2026-08-28",
+    "time": "18:00",
+    "venue": "Ravindra Bharathi Auditorium",
+    "area": "Lakdikapul",
+    "price": "Free Entry",
+    "description": "Annual literary meet with theatre performances, poetry readings, and book discussions.",
+    "sources": [
+      {
+        "site_name": "FullHyd",
+        "source_url": "https://events.fullhyderabad.com/theatre-fest-2026"
+      },
+      {
+        "site_name": "HydHub",
+        "source_url": "https://hydhub.in/events/ravindra-bharathi-fest"
+      }
+    ],
+    "scraped_at": "2026-08-22T12:00:00Z"
+  },
+  {
+    "event_id": "evt_aroundu_02",
+    "title": "Jubilee Hills Weekend Runners Social",
+    "category": "Sports & Outdoors",
+    "date": "2026-08-29",
+    "time": "06:00",
+    "venue": "KBR National Park",
+    "area": "Jubilee Hills",
+    "price": "Free",
+    "description": "5K & 10K morning community run followed by coffee and networking.",
+    "sources": [
+      {
+        "site_name": "AroundU",
+        "source_url": "https://aroundu.in/city/hyderabad/kbr-park-run"
+      }
+    ],
+    "scraped_at": "2026-08-22T12:00:00Z"
+  },
+  {
+    "event_id": "evt_hydhub_03",
+    "title": "AI & Web-Slinger Developer Workshop",
+    "category": "Workshops & Classes",
+    "date": "2026-08-30",
+    "time": "10:00",
+    "venue": "T-Hub Phase 2",
+    "area": "Hitech City",
+    "price": "Free RSVP",
+    "description": "Hands-on workshop on building web scrapers, data pipelines, and AI agent workflows.",
+    "sources": [
+      {
+        "site_name": "HydHub",
+        "source_url": "https://hydhub.in/workshops/ai-developers-thub"
+      },
+      {
+        "site_name": "FullHyd",
+        "source_url": "https://events.fullhyderabad.com/ai-workshop-thub"
+      }
+    ],
+    "scraped_at": "2026-08-22T12:00:00Z"
+  }
+]

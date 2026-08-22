@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MergedEventRecord",
+  "type": "object",
+  "properties": {
+    "event_id": { "type": "string" },
+    "title": { "type": "string" },
+    "category": { "type": "string" },
+    "date": { "type": "string" },
+    "time": { "type": "string" },
+    "venue": { "type": "string" },
+    "area": { "type": "string" },
+    "price": { "type": "string" },
+    "description": { "type": "string" },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "site_name": { "type": "string" },
+          "source_url": { "type": "string" }
+        }
+      }
+    },
+    "scraped_at": { "type": "string" }
+  },
+  "required": ["event_id", "title", "category", "date", "venue", "sources"]
+}

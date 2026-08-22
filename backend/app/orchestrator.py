@@ -5,48 +5,47 @@ from datetime import datetime
 from app.database import (
     create_job,
     update_job_status,
-    save_scored_items,
+    save_merged_events,
     persist_snapshot,
-    get_items_by_job
+    get_all_events
 )
 from app.scraper.collector import collect_raw_dataset
-from app.scraper.validator import validate_item_schema, run_self_healing
-from app.processor.normalizer import normalize_dataset
-from app.processor.scoring import score_items
+from app.scraper.validator import validate_event_schema, run_self_healing
+from app.processor.normalizer import normalize_events
+from app.processor.deduplicator import deduplicate_events
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 async def run_pipeline(job_id: str, target: str, inject_errors: bool = False) -> dict:
     """
-    Executes the full pipeline step-by-step:
+    Executes the full event pipeline step-by-step:
     1. Update job status to RUNNING
-    2. Collect dataset (raw JSON)
-    3. Health Check: Validate items
-    4. AI Self-Healing: Repair broken items if needed
-    5. Normalization: clean strings/dates using Pandas
-    6. Scoring: calculate intelligence scores
-    7. Persistence: save job, items, and snapshot metrics
+    2. Collect raw dataset (FullHyd / HydHub / AroundU)
+    3. Health Check: Validate raw items
+    4. AI Self-Healing: Repair broken selectors if needed
+    5. Normalization: Map to Unified Category Taxonomy & YYYY-MM-DD date formats
+    6. De-duplication: Fuzzy token match on title + date + venue
+    7. Storage: Persist merged events and run snapshots
     """
-    logger.info(f"Starting pipeline run for job {job_id} on target {target}")
+    logger.info(f"Starting event pipeline for job {job_id} on target {target}")
     update_job_status(job_id, "RUNNING")
     
     try:
-        # Simulate slight delay in network/scraping
-        await asyncio.sleep(1.0)
+        await asyncio.sleep(0.5) # Simulate network/scraping
         
         # 1. Collect
         raw_data = collect_raw_dataset(target, inject_errors=inject_errors)
         
-        # 2. Validate and 3. AI Self-Heal
+        # 2. Validate & Self-Heal
         validated_data = []
         healed_any = False
         healing_logs = []
         
         for item in raw_data:
-            errors = validate_item_schema(item)
+            errors = validate_event_schema(item)
             if errors:
-                logger.warning(f"Validation errors in item {item.get('id')}: {errors}")
+                logger.warning(f"Validation error in item: {errors}")
                 healed_item, logs = run_self_healing(item, errors)
                 validated_data.append(healed_item)
                 healing_logs.extend(logs)
@@ -54,21 +53,21 @@ async def run_pipeline(job_id: str, target: str, inject_errors: bool = False) ->
             else:
                 validated_data.append(item)
                 
-        # 4. Normalize
-        normalized_data = normalize_dataset(validated_data)
+        # 3. Normalize & Map Taxonomy
+        normalized_data = normalize_events(validated_data)
         
-        # 5. Score
-        scored_data = score_items(normalized_data)
+        # 4. De-duplicate across sources
+        merged_events, dedup_stats = deduplicate_events(normalized_data)
         
-        # 6. Save items
-        save_scored_items(job_id, scored_data)
+        # 5. Persist merged events
+        save_merged_events(job_id, merged_events)
         
-        # Calculate summary metrics and persist historical snapshot
-        total_items = len(scored_data)
-        avg_score = sum(item["score"] for item in scored_data) / total_items if total_items > 0 else 0
-        persist_snapshot(total_items, avg_score)
+        # Calculate summary metrics & snapshot
+        all_stored_events = get_all_events()
+        total_events = len(all_stored_events)
+        unique_venues = len(set(e["venue"] for e in all_stored_events)) if all_stored_events else 0
+        persist_snapshot(total_events, unique_venues)
         
-        # Update job status
         final_status = "COMPLETED_HEALED" if healed_any else "COMPLETED"
         update_job_status(job_id, final_status)
         
@@ -78,8 +77,8 @@ async def run_pipeline(job_id: str, target: str, inject_errors: bool = False) ->
             "final_status": final_status,
             "healed": healed_any,
             "healing_logs": healing_logs,
-            "items_count": total_items,
-            "average_score": avg_score
+            "dedup_stats": dedup_stats,
+            "merged_events_count": len(merged_events)
         }
         
     except Exception as e:
@@ -91,16 +90,13 @@ async def run_pipeline(job_id: str, target: str, inject_errors: bool = False) ->
             "error": str(e)
         }
 
-# Simple in-memory background scheduler to simulate Scheduled Task Orchestrator
-async def start_periodic_scheduler(interval_seconds: int = 60, target: str = "Job Boards"):
+async def start_periodic_scheduler(interval_seconds: int = 300, target: str = "FullHyd"):
     """
-    Background loop that runs the scraping pipeline periodically.
+    Background loop that runs periodic event scraping tasks.
     """
     logger.info(f"Starting scheduler: Scrape target '{target}' every {interval_seconds}s")
     while True:
         await asyncio.sleep(interval_seconds)
         job_id = f"sched_{uuid.uuid4().hex[:8]}"
         create_job(job_id, target)
-        # Inject error periodically (every other run) to test self-healing
-        inject_error = (int(datetime.utcnow().timestamp()) // interval_seconds) % 2 == 0
-        await run_pipeline(job_id, target, inject_errors=inject_error)
+        await run_pipeline(job_id, target, inject_errors=False)

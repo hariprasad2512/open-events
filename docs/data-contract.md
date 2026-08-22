@@ -1,208 +1,70 @@
 # Data Contract
 
-> Defines how data moves from external scraping sources into the Startup Traction Intelligence system.
-
-The purpose of this contract is to ensure that:
-- scraper output can change independently from application logic
-- multiple sources can provide different data formats
-- normalized signals follow one canonical structure
-- frontend and backend can develop independently
-- intelligence logic does not depend directly on raw scraper output
+> Defines raw scraper outputs, validation contracts, normalized event schemas, and merged de-duplicated records for Scrapeverse.
 
 ---
 
-# 1. Data Flow
+# 1. Data Pipeline Stages
 
-The system has major data representations:
 ```text
-RAW SOURCE DATA
-      ↓
-VALIDATED RAW DATA
-      ↓
-NORMALIZED STARTUP SIGNALS
-      ↓
-HISTORICAL SNAPSHOTS
-      ↓
-TRACTION INTELLIGENCE
+RAW SCRAPER OUTPUT ➔ VALIDATED RAW DATA ➔ NORMALIZED EVENT ➔ FUZZY MERGED EVENT ➔ TIME-SERIES DB
 ```
 
 ---
 
-# 2. Raw Scraper Data
+# 2. Unified Data Schema (Normalization Target)
 
-Raw data is the output returned directly from a scraper or external collection process.
-Example:
-```json
-{
-  "company_name": "Example Startup",
-  "github_url": "https://github.com/example/startup",
-  "stars": 12000,
-  "forks": 850,
-  "contributors": 75
-}
-```
-Raw data is source-specific, potentially inconsistent, and must be validated before ingestion.
+Every site's raw scraped output is mapped into this common structure before merging:
 
----
-
-# 3. Validation Contract
-
-Before normalization, raw data must pass validation.
-The validator checks: Response exists ➔ Expected structure exists ➔ Required fields exist ➔ Field types are valid ➔ Values are reasonable.
-
-Validation result structure:
-```json
-{
-  "valid": true,
-  "errors": [],
-  "warnings": []
-}
-```
+| Field | Type | Description |
+|---|---|---|
+| `event_id` | string | Generated hash/UUID for the merged (de-duplicated) event record |
+| `title` | string | Event name as listed on source site |
+| `category` | enum | Mapped to Unified Taxonomy |
+| `date` | string | Event start date (`YYYY-MM-DD`) |
+| `time` | string | Start time (`HH:MM`) or slot label (e.g. `Evening`) |
+| `venue` | string | Venue / location name |
+| `area` | string | Neighborhood / locality (e.g., `Jubilee Hills`) |
+| `price` | string | `Free` or listed price range |
+| `description` | string | Short blurb summary |
+| `sources` | list of objects | `[{site_name, source_url}]` — one per site found on post de-dup |
+| `scraped_at` | string | Datetime timestamp (`ISO-8601`) |
 
 ---
 
-# 4. Canonical Startup Identity
+# 3. Unified Category Taxonomy
 
-Every normalized record is associated with a startup:
-```json
-{
-  "startup_id": "startup_001",
-  "startup_name": "Example AI"
-}
-```
-
-Required Fields:
-- `startup_id` (string): Internal unique identifier.
-- `startup_name` (string): Human-readable startup name.
+- `Music`
+- `Theatre & Arts`
+- `Workshops & Classes`
+- `Sports & Outdoors`
+- `Food & Drink`
+- `Talks & Meetups`
+- `Nightlife`
+- `Family / Kids`
+- `Exhibitions`
 
 ---
 
-# 5. Normalized Signal Schema
+# 4. De-duplication Contract
 
-The core internal unit of the system is a **Startup Signal**:
+Events matched across sources on fuzzy token similarity (`title` + `date` + `venue`) are merged into a single event record with combined `sources` arrays:
 
 ```json
 {
-  "startup_id": "startup_001",
-  "startup_name": "Example AI",
-  "signal_category": "developer_activity",
-  "metric": "github_stars",
-  "value": 12500,
-  "unit": "count",
-  "source": "github",
-  "observed_at": "2026-08-20T10:00:00Z",
-  "metadata": {
-    "repository_url": "https://github.com/example-ai/core"
-  }
+  "event_id": "evt_a8f9021b",
+  "title": "Sunburn Hyderabad DJ Night",
+  "category": "Music",
+  "date": "2026-08-28",
+  "time": "20:00",
+  "venue": "Gachibowli Stadium",
+  "area": "Gachibowli",
+  "price": "₹999 onwards",
+  "description": "Live DJ concert featuring international artists.",
+  "sources": [
+    { "site_name": "FullHyd", "source_url": "https://events.fullhyderabad.com/sunburn-dj-night" },
+    { "site_name": "HydHub", "source_url": "https://hydhub.in/events/sunburn-dj" }
+  ],
+  "scraped_at": "2026-08-22T12:00:00Z"
 }
 ```
-
----
-
-# 6. Startup Signal Fields
-
-### Signal Classification
-- `signal_category`: Category string (e.g. `developer_activity`, `hiring_activity`, `product_activity`, `community_activity`, `public_attention`).
-- `metric`: Specific metric name (e.g. `github_stars`, `github_contributors`, `open_positions`, `community_mentions`).
-
-### Value & Source
-- `value`: Numeric count or percentage value (e.g. `12500`).
-- `unit`: Measurement unit (e.g. `count`, `percentage`).
-- `source`: Source identifier string (e.g. `github`, `job_source`, `news`).
-- `observed_at`: Timestamp in UTC ISO-8601 format (`2026-08-20T10:00:00Z`).
-
----
-
-# 7. Multiple Signals Example
-
-```json
-[
-  {
-    "startup_id": "startup_001",
-    "signal_category": "developer_activity",
-    "metric": "github_stars",
-    "value": 12500,
-    "unit": "count",
-    "source": "github",
-    "observed_at": "2026-08-20T10:00:00Z",
-    "metadata": {}
-  },
-  {
-    "startup_id": "startup_001",
-    "signal_category": "hiring_activity",
-    "metric": "open_positions",
-    "value": 18,
-    "unit": "count",
-    "source": "job_source",
-    "observed_at": "2026-08-20T10:00:00Z",
-    "metadata": {}
-  }
-]
-```
-
----
-
-# 8. Historical Data Contract
-
-Historical analysis compares observations of the same metric across time snapshots:
-```json
-[
-  { "observed_at": "2026-08-01T00:00:00Z", "value": 8000 },
-  { "observed_at": "2026-08-08T00:00:00Z", "value": 9200 },
-  { "observed_at": "2026-08-15T00:00:00Z", "value": 10800 }
-]
-```
-
----
-
-# 9. Derived Metrics
-
-Calculated from historical signals:
-```json
-{
-  "metric": "github_stars",
-  "current_value": 12000,
-  "previous_value": 10000,
-  "absolute_change": 2000,
-  "percentage_change": 20.0,
-  "current_observed_at": "2026-08-20T10:00:00Z",
-  "previous_observed_at": "2026-08-13T10:00:00Z"
-}
-```
-
----
-
-# 10. Traction Result Contract
-
-```json
-{
-  "startup_id": "startup_001",
-  "traction_score": 85,
-  "score_change": 9,
-  "calculated_at": "2026-08-20T10:00:00Z",
-  "contributors": [
-    {
-      "signal_category": "developer_activity",
-      "metric": "github_stars",
-      "impact": "positive",
-      "reason": "GitHub stars increased by 20%"
-    },
-    {
-      "signal_category": "hiring_activity",
-      "metric": "open_positions",
-      "impact": "positive",
-      "reason": "Open positions increased from 12 to 18"
-    }
-  ]
-}
-```
-
----
-
-# 11. Data Quality States
-
-- `PENDING`: Scrape initiated.
-- `RUNNING`: Collecting data.
-- `SUCCESS`: Scraping complete and validated.
-- `VALIDATION_FAILED`: Output failed schema check.
-- `FAILED`: Execution error or timeout.

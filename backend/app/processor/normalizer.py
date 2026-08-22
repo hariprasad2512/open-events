@@ -1,59 +1,101 @@
 import pandas as pd
 from datetime import datetime
+import re
 
-def normalize_dataset(items: list) -> list:
+UNIFIED_TAXONOMY = [
+    "Music",
+    "Theatre & Arts",
+    "Workshops & Classes",
+    "Sports & Outdoors",
+    "Food & Drink",
+    "Talks & Meetups",
+    "Nightlife",
+    "Family / Kids",
+    "Exhibitions"
+]
+
+def map_category(raw_cat: str) -> str:
+    """Maps raw source category strings into the Unified Category Taxonomy."""
+    cat_lower = str(raw_cat).lower()
+    
+    if any(k in cat_lower for k in ["music", "concert", "dj", "band"]):
+        return "Music"
+    elif any(k in cat_lower for k in ["theatre", "art", "play", "stage", "cultural", "literary"]):
+        return "Theatre & Arts"
+    elif any(k in cat_lower for k in ["workshop", "class", "tech", "learning"]):
+        return "Workshops & Classes"
+    elif any(k in cat_lower for k in ["sport", "outdoor", "run", "fitness", "hike"]):
+        return "Sports & Outdoors"
+    elif any(k in cat_lower for k in ["food", "drink", "dining", "tasting"]):
+        return "Food & Drink"
+    elif any(k in cat_lower for k in ["talk", "meetup", "social", "networking"]):
+        return "Talks & Meetups"
+    elif any(k in cat_lower for k in ["nightlife", "party", "club"]):
+        return "Nightlife"
+    elif any(k in cat_lower for k in ["family", "kid", "child"]):
+        return "Family / Kids"
+    elif any(k in cat_lower for k in ["exhibition", "expo", "gallery"]):
+        return "Exhibitions"
+    
+    return "Talks & Meetups" # Default fallback
+
+def parse_date(date_str: str) -> str:
+    """Parses various date text formats (e.g. 2026-08-28, 28/08/2026) into YYYY-MM-DD."""
+    if not date_str:
+        return datetime.utcnow().strftime("%Y-%m-%d")
+        
+    date_str = date_str.strip()
+    
+    # Check DD/MM/YYYY
+    match_slash = re.match(r"^(\d{2})/(\d{2})/(\d{4})$", date_str)
+    if match_slash:
+        day, month, year = match_slash.groups()
+        return f"{year}-{month}-{day}"
+        
+    try:
+        dt = pd.to_datetime(date_str)
+        return dt.strftime("%Y-%m-%d")
+    except Exception:
+        return datetime.utcnow().strftime("%Y-%m-%d")
+
+def normalize_events(raw_items: list) -> list:
     """
-    Normalizes a list of items using Pandas.
-    Cleans strings, formats dates to ISO-8601, maps null values, and returns list of clean items.
+    Normalizes a list of raw event items into the common internal structure.
     """
-    if not items:
+    if not raw_items:
         return []
         
-    df = pd.DataFrame(items)
-    
-    # Clean whitespace from title and source
-    if "title" in df.columns:
-        df["title"] = df["title"].astype(str).str.strip()
-    if "source" in df.columns:
-        df["source"] = df["source"].astype(str).str.strip()
-    if "url" in df.columns:
-        df["url"] = df["url"].astype(str).str.strip().str.lower()
+    normalized = []
+    for item in raw_items:
+        title = str(item.get("raw_title", "")).strip()
+        cat_raw = item.get("raw_category", "")
+        category = map_category(cat_raw)
         
-    # Standardize tags: ensure they are lowercase lists
-    if "tags" in df.columns:
-        def clean_tags(tags):
-            if not isinstance(tags, list):
-                return ["general"]
-            return [str(t).strip().lower() for t in tags if t]
-        df["tags"] = df["tags"].apply(clean_tags)
+        date_raw = item.get("raw_date", "")
+        date_clean = parse_date(date_raw)
         
-    # Standardize metadata scrapedAt using pandas datetime
-    normalized_items = []
-    for _, row in df.iterrows():
-        item = row.to_dict()
+        time_clean = str(item.get("raw_time", "Evening")).strip()
+        venue_clean = str(item.get("venue_name", "City Venue")).strip()
+        area_clean = str(item.get("locality", "")).strip()
+        price_clean = str(item.get("ticket_price", "Free")).strip()
+        desc_clean = str(item.get("blurb", "")).strip()
         
-        # Ensure metadata dict structure exists
-        if not isinstance(item.get("metadata"), dict):
-            item["metadata"] = {}
-            
-        metadata = item["metadata"]
-        scraped_at_val = metadata.get("scrapedAt")
+        site_name = str(item.get("source_site", "Web")).strip()
+        source_url = str(item.get("source_url", "")).strip()
+        scraped_at = item.get("scraped_at", datetime.utcnow().isoformat() + "Z")
         
-        try:
-            # Parse & format date
-            dt = pd.to_datetime(scraped_at_val or datetime.utcnow())
-            metadata["scrapedAt"] = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-        except Exception:
-            metadata["scrapedAt"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-            
-        # Clean region
-        region = metadata.get("region")
-        if not region or pd.isna(region):
-            metadata["region"] = "global"
-        else:
-            metadata["region"] = str(region).strip().lower()
-            
-        item["metadata"] = metadata
-        normalized_items.append(item)
+        normalized.append({
+            "title": title,
+            "category": category,
+            "date": date_clean,
+            "time": time_clean,
+            "venue": venue_clean,
+            "area": area_clean,
+            "price": price_clean,
+            "description": desc_clean,
+            "site_name": site_name,
+            "source_url": source_url,
+            "scraped_at": scraped_at
+        })
         
-    return normalized_items
+    return normalized
