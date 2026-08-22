@@ -2,23 +2,23 @@
   "collectors": [
     {
       "name": "fullhyd_events_collector",
-      "collector_id": "c_fullhyd_events",
+      "collector_id": "c_mt4huvzfl8yupcmb6",
       "source": "FullHyd",
       "target_url": "https://events.fullhyderabad.com",
       "purpose": "Scrapes dance, music, theatre, arts, sports, talks, workshops, tech, food listings",
       "status": "APPROVED"
     },
     {
-      "name": "hydhub_events_collector",
-      "collector_id": "c_hydhub_events",
-      "source": "HydHub",
-      "target_url": "https://hydhub.in",
-      "purpose": "Scrapes general events, meetups, workshops, concerts",
+      "name": "highape_events_collector",
+      "collector_id": "c_mt4no7jl2hsz0xq1t",
+      "source": "HighApe",
+      "target_url": "https://highape.com/hyderabad",
+      "purpose": "Scrapes workshops, exhibitions, food & drink, live performances",
       "status": "APPROVED"
     },
     {
       "name": "aroundu_events_collector",
-      "collector_id": "c_aroundu_events",
+      "collector_id": "c_mt4nus5z1nhju2014n",
       "source": "AroundU",
       "target_url": "https://aroundu.in/city/hyderabad",
       "purpose": "Scrapes neighborhood community meetups (Jubilee Hills, Gachibowli, Hitech City)",

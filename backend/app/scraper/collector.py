@@ -12,17 +12,17 @@ logger = logging.getLogger(__name__)
 # Registry Collector mapping for Hyderabad pilot
 COLLECTOR_REGISTRY = {
     "fullhyd": {
-        "collector_id": "c_fullhyd_events",
+        "collector_id": "c_mt4huvzfl8yupcmb6",
         "site_name": "FullHyd",
         "url": "https://events.fullhyderabad.com"
     },
-    "hydhub": {
-        "collector_id": "c_hydhub_events",
-        "site_name": "HydHub",
-        "url": "https://hydhub.in"
+    "highape": {
+        "collector_id": "c_mt4no7jl2hsz0xq1t",
+        "site_name": "HighApe",
+        "url": "https://highape.com/hyderabad"
     },
     "aroundu": {
-        "collector_id": "c_aroundu_events",
+        "collector_id": "c_mt4nus5z1nhju2014n",
         "site_name": "AroundU",
         "url": "https://aroundu.in/city/hyderabad"
     }
@@ -54,7 +54,7 @@ def fetch_live_brightdata_scraper(collector_id: str, target_url: str) -> list:
         with urllib.request.urlopen(req, timeout=15) as response:
             res_body = response.read().decode("utf-8")
             data = json.loads(res_body)
-            logger.info(f"Bright Data live trigger response: {data}")
+            logger.info(f"Bright Data live trigger response for collector {collector_id}: {data}")
             
             if isinstance(data, list):
                 return data
@@ -66,29 +66,44 @@ def fetch_live_brightdata_scraper(collector_id: str, target_url: str) -> list:
         logger.error(f"Live Bright Data Scraper call failed for collector {collector_id}: {str(e)}")
         return None
 
-def load_real_scraped_file() -> list:
-    """Loads raw scraped items from teammate's scraped-data.json payload if available."""
-    possible_paths = [
-        os.path.join(os.path.dirname(__file__), "..", "..", ".pranav", "scraped-data.json"),
-        os.path.join(os.path.dirname(__file__), "..", "..", "data", "samples", "scraped_data_real.json")
-    ]
-    for p in possible_paths:
-        if os.path.exists(p):
-            try:
-                with open(p, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                    if isinstance(data, list) and len(data) > 0:
-                        logger.info(f"Loaded {len(data)} real raw items from {p}")
-                        return data
-            except Exception as e:
-                logger.error(f"Failed loading raw scraped file {p}: {str(e)}")
+def load_real_scraped_file(target: str = "fullhyd") -> list:
+    """Loads raw scraped items from local mock JSON fixture files if available."""
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    
+    target_lower = target.lower()
+    file_map = {
+        "fullhyd": os.path.join(repo_root, "data", "fixtures", "fullhyd_raw.json"),
+        "highape": os.path.join(repo_root, "data", "fixtures", "highape_raw.json"),
+        "aroundu": os.path.join(repo_root, "data", "fixtures", "aroundu_raw.json"),
+        "all": os.path.join(repo_root, "data", "fixtures", "scraped_mock_data.json")
+    }
+    
+    selected_path = None
+    for key, path in file_map.items():
+        if key in target_lower:
+            selected_path = path
+            break
+            
+    if not selected_path:
+        selected_path = file_map["all"]
+
+    if os.path.exists(selected_path):
+        try:
+            with open(selected_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, list) and len(data) > 0:
+                    logger.info(f"Loaded {len(data)} raw items from {selected_path}")
+                    return data
+        except Exception as e:
+            logger.error(f"Failed loading raw scraped file {selected_path}: {str(e)}")
+            
     return None
 
 def collect_raw_dataset(target: str, inject_errors: bool = False) -> list:
     """
-    Collects raw event listings from target platforms.
+    Collects raw event listings from target platforms: FullHyd, HighApe, AroundU.
     1. Attempts live Bright Data API call if BRIGHT_DATA_API_KEY is available.
-    2. Attempts loading teammate's raw scraped JSON file if present on disk.
+    2. Attempts loading raw scraped JSON files if present on disk.
     3. Falls back to sample listings simulation.
     """
     timestamp = datetime.utcnow().isoformat() + "Z"
@@ -104,72 +119,32 @@ def collect_raw_dataset(target: str, inject_errors: bool = False) -> list:
     if collector_info and BRIGHT_DATA_API_KEY:
         live_data = fetch_live_brightdata_scraper(collector_info["collector_id"], collector_info["url"])
         if live_data and isinstance(live_data, list) and len(live_data) > 0:
-            logger.info(f"Successfully received {len(live_data)} raw items from Bright Data Scraper Studio.")
+            logger.info(f"Successfully received {len(live_data)} raw items from Bright Data Scraper Studio ({collector_info['collector_id']}).")
             return live_data
 
-    # 2. Teammate's Real Raw Scraped JSON File
-    if "fullhyd" in target_key:
-        real_file_data = load_real_scraped_file()
-        if real_file_data:
-            if inject_errors:
-                # Simulate glitch in first item
-                real_file_data = [dict(item) for item in real_file_data]
-                real_file_data[0]["venue_name"] = None
-            return real_file_data
+    # 2. Local Raw Scraped JSON Fixtures
+    real_file_data = load_real_scraped_file(target)
+    if real_file_data:
+        if inject_errors:
+            real_file_data = [dict(item) for item in real_file_data]
+            real_file_data[0]["venue_name"] = None
+        return real_file_data
 
     # 3. Fallback High-Fidelity Samples
     logger.info(f"Using high-fidelity sample listings for target '{target}'")
-    
-    if "fullhyd" in target_key:
-        dataset = [
-            {
-                "raw_id": str(uuid.uuid4()),
-                "raw_title": "Hyderabad Literary & Theatre Festival",
-                "raw_category": "Theatre & Cultural",
-                "raw_date": "2026-08-28",
-                "raw_time": "18:00",
-                "venue_name": "Ravindra Bharathi Auditorium" if not inject_errors else None,
-                "locality": "Lakdikapul",
-                "ticket_price": "Free Entry",
-                "blurb": "Annual literary meet with theatre performances, poetry readings, and book discussions.",
-                "source_site": "FullHyd",
-                "source_url": "https://events.fullhyderabad.com/theatre-fest-2026",
-                "scraped_at": timestamp
-            }
-        ]
-    elif "hydhub" in target_key:
-        dataset = [
-            {
-                "raw_id": str(uuid.uuid4()),
-                "raw_title": "Hyderabad Literary Festival 2026",
-                "raw_category": "Stage Plays & Arts",
-                "raw_date": "28/08/2026",
-                "raw_time": "6:00 PM",
-                "venue_name": "Ravindra Bharathi Auditorium",
-                "locality": "Lakdikapul",
-                "ticket_price": "Free",
-                "blurb": "Celebration of literature, theatre, and arts.",
-                "source_site": "HydHub",
-                "source_url": "https://hydhub.in/events/ravindra-bharathi-fest",
-                "scraped_at": timestamp
-            }
-        ]
-    else:
-        dataset = [
-            {
-                "raw_id": str(uuid.uuid4()),
-                "raw_title": "Jubilee Hills Weekend Runners Social",
-                "raw_category": "Outdoor Sports",
-                "raw_date": "2026-08-29",
-                "raw_time": "06:00 AM",
-                "venue_name": "KBR National Park",
-                "locality": "Jubilee Hills",
-                "ticket_price": "Free",
-                "blurb": "5K & 10K morning community run followed by coffee and networking.",
-                "source_site": "AroundU",
-                "source_url": "https://aroundu.in/city/hyderabad/kbr-park-run",
-                "scraped_at": timestamp
-            }
-        ]
-        
-    return dataset
+    return [
+        {
+            "raw_id": str(uuid.uuid4()),
+            "raw_title": "Hyderabad Literary & Theatre Festival",
+            "raw_category": "Theatre & Cultural",
+            "raw_date": "2026-08-28",
+            "raw_time": "18:00",
+            "venue_name": "Ravindra Bharathi Auditorium" if not inject_errors else None,
+            "locality": "Lakdikapul",
+            "ticket_price": "Free Entry",
+            "blurb": "Annual literary meet with theatre performances, poetry readings, and book discussions.",
+            "source_site": "FullHyd",
+            "source_url": "https://events.fullhyderabad.com/theatre-fest-2026",
+            "scraped_at": timestamp
+        }
+    ]
