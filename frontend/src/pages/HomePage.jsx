@@ -1,3 +1,8 @@
+import React from 'react';
+import SceneLandingPage from '../components/SceneLandingPage.jsx';
+import EventCard from '../components/EventCard.jsx';
+import { ArrowRightIcon, MusicIcon, PaletteIcon, SparklesIcon } from '../components/Icons.jsx';
+
 export default function HomePage({
   events = [],
   onNavigate,
@@ -7,28 +12,28 @@ export default function HomePage({
   const featuredEvents = events.slice(0, 3);
 
   const categories = [
-    { name: 'Music', icon: '🎵', desc: 'Live concerts, jams & acoustic sets' },
-    { name: 'Art & Culture', icon: '🎨', desc: 'Exhibitions, theatre & performances' },
-    { name: 'Ideas & Talks', icon: '💡', desc: 'Panels, founder mixers & keynotes' },
-    { name: 'Technology', icon: '⚡', desc: 'AI hackathons, dev meetups & workshops' },
-    { name: 'Community', icon: '🤝', desc: 'Neighborhood gatherings & social clubs' }
+    { name: 'Music', symbol: '✿', desc: 'Live concerts, sitars, acoustic jams & waveforms', image: '/assets/music_concert_visual.jpg' },
+    { name: 'Theatre & Arts', symbol: '✦', desc: 'Terracotta pottery, canvas paintings & plays', image: '/assets/art_workshop_visual.jpg' },
+    { name: 'Talks & Meetups', symbol: '◉', desc: 'Archival ideas, founder mixers & keynotes', image: '/assets/ideas_talks_visual.jpg' },
+    { name: 'Sports & Outdoors', symbol: '⌁', desc: 'Trekking, outdoor camps & wilderness survival', image: '/assets/hyderabad_cultural_hero.jpg' },
+    { name: 'Family / Kids', symbol: '◆', desc: 'Neighborhood gatherings & community workshops', image: '/assets/hyderabad_cultural_hero.jpg' }
   ];
 
   return (
-    <div className="blueprint-page home-manifesto-page">
-      {/* ── Screen 01: Hero / Statement ── */}
+    <div className="home-manifesto-page">
+      {/* ── Screen 01: Hero Composition ── */}
       <section className="manifesto-hero">
         <div className="hero-kicker-pill">
           <span className="pill-dot" />
-          <span>OPEN EVENTS // CITY CULTURE DIGEST</span>
+          <span>HYDERABAD CULTURAL OBSERVATORY // REAL TIME FEEDS</span>
         </div>
 
         <h1 className="hero-manifesto-title">
-          Something is happening.
+          Where Art Happens.
         </h1>
 
         <p className="hero-manifesto-subtitle">
-          Independent, cultural, and community events are scattered across isolated websites. Open Events aggregates them into one non-transactional discovery space.
+          Real city leisure events, 3D artwork compositions, kinetic typography, and live scraper feeds aggregated across FullHyd, HighApe, and AroundU.
         </p>
 
         <div className="hero-actions-row">
@@ -36,21 +41,45 @@ export default function HomePage({
             onClick={() => onNavigate('discover')}
             className="manifesto-primary-btn"
           >
-            <span>Discover Events</span>
-            <span className="btn-arrow">→</span>
+            <span>Enter The Universe</span>
+            <ArrowRightIcon className="w-4 h-4 ml-2 inline-block" />
           </button>
           <button
             onClick={() => onNavigate('calendar')}
             className="manifesto-secondary-btn"
           >
-            <span>Explore Calendar</span>
+            <span>Explore City Timeline</span>
           </button>
         </div>
       </section>
 
-      {/* ── Editorial Statement Section ── */}
+      {/* ── Generated Hyderabad 3D Cultural Hero Banner ── */}
+      <div className="hero-art-banner-box">
+        <img
+          src="/assets/hyderabad_cultural_hero.jpg"
+          alt="Hyderabad Cultural Universe"
+          className="hero-art-banner-img"
+        />
+        <div className="hero-art-banner-overlay" />
+        <div className="hero-art-banner-caption">
+          <span className="statement-badge">[HERO COMPOSITION]</span>
+          <h2 className="hero-art-banner-title">
+            Charminar & Cultural Orbits · Hyderabad
+          </h2>
+        </div>
+      </div>
+
+      {/* ── 3D Living Sculpture Canvas ── */}
+      <SceneLandingPage
+        onSelectCategory={(cat) => {
+          onSelectCategory(cat);
+          onNavigate('discover');
+        }}
+      />
+
+      {/* ── Editorial Manifesto Statement ── */}
       <section className="manifesto-statement-box">
-        <div className="statement-badge">[DESIGN PHILOSOPHY]</div>
+        <div className="statement-badge">[DESIGN MANIFESTO]</div>
         <h2 className="statement-heading">
           "The product should feel like an artistic discovery space, not a transactional ticket marketplace."
         </h2>
@@ -59,40 +88,20 @@ export default function HomePage({
         </p>
       </section>
 
-      {/* ── Live Discovery Preview ── */}
+      {/* ── Live Discovery Artifact Preview ── */}
       <section className="live-discovery-preview-section">
         <div className="preview-header">
-          <span className="preview-tag">[LIVE DISCOVERY PREVIEW]</span>
-          <h2 className="preview-title">Happening this week in Hyderabad</h2>
-          <button
-            onClick={() => onNavigate('discover')}
-            className="preview-view-all-btn"
-          >
-            View All {events.length} Events →
-          </button>
+          <span className="statement-badge">[COLLECTIBLE SIGNALS]</span>
+          <h2 className="statement-heading">Happening this week in Hyderabad</h2>
         </div>
 
         <div className="featured-cards-grid">
           {featuredEvents.map((evt) => (
-            <div
+            <EventCard
               key={evt.event_id}
+              event={evt}
               onClick={() => onSelectEvent(evt)}
-              className="featured-event-card"
-            >
-              <div className="card-top-bar">
-                <span className="cat-badge">{evt.category || 'Music'}</span>
-                <span className="freshness-badge">✦ Verified</span>
-              </div>
-              <h3 className="event-card-title">{evt.title}</h3>
-              <div className="card-meta-line">
-                <span>📅 {evt.date} at {evt.time || 'Evening'}</span>
-                <span>📍 {evt.venue || 'Hyderabad'}</span>
-              </div>
-              <div className="card-footer-line">
-                <span className="card-price">{evt.price || 'Free Entry'}</span>
-                <span className="card-open-link">Inspect Event →</span>
-              </div>
-            </div>
+            />
           ))}
         </div>
       </section>
@@ -100,11 +109,11 @@ export default function HomePage({
       {/* ── Category Invitation Grid ── */}
       <section className="category-invitation-section">
         <div className="preview-header">
-          <span className="preview-tag">[CATEGORY INVITATION]</span>
-          <h2 className="preview-title">Explore by domain</h2>
+          <span className="statement-badge">[DOMAIN ORBITS]</span>
+          <h2 className="statement-heading">Explore by cultural domain</h2>
         </div>
 
-        <div className="category-cards-grid">
+        <div className="domain-cards-grid">
           {categories.map((cat) => (
             <div
               key={cat.name}
@@ -112,25 +121,22 @@ export default function HomePage({
                 onSelectCategory(cat.name);
                 onNavigate('discover');
               }}
-              className="category-invite-card"
+              className="collectible-artifact-card domain-artifact-card"
             >
-              <div className="cat-icon-circle">{cat.icon}</div>
-              <h3 className="cat-card-title">{cat.name}</h3>
-              <p className="cat-card-desc">{cat.desc}</p>
-              <span className="cat-explore-link">Browse {cat.name} →</span>
+              <div className="domain-card-media">
+                <img src={cat.image} alt={cat.name} className="domain-card-img" />
+                <div className="domain-card-overlay" />
+                <div className="domain-card-symbol">{cat.symbol}</div>
+              </div>
+              <div className="domain-card-body">
+                <h3 className="domain-card-title">{cat.name}</h3>
+                <p className="domain-card-desc">{cat.desc}</p>
+                <span className="domain-card-link">Browse Orbit →</span>
+              </div>
             </div>
           ))}
         </div>
       </section>
-
-      {/* ── Footer / Source Philosophy ── */}
-      <footer className="source-philosophy-footer">
-        <div className="footer-philosophy-box">
-          <p className="philosophy-text">
-            <strong>Source Philosophy:</strong> All events are discovered from public web source platforms (FullHyd, HydHub, AroundU). Open Events does not sell tickets or lock content behind paywalls.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

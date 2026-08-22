@@ -1,129 +1,78 @@
-import { useState } from 'react';
-import { triggerScrape, checkJob } from '../lib/api.ts';
-import { IconTerminal, IconSparkles } from './Icons.jsx';
+import React, { useState } from 'react';
+import { LightningIcon, DatabaseIcon, SourceIcon } from './Icons.jsx';
 
-const TARGETS = ['FullHyd', 'HighApe', 'AroundU'];
-
-export default function TriggerPanel({ onTriggered }) {
+export default function TriggerPanel({ isOpen, onClose, onTriggerScrape, activeJob }) {
   const [target, setTarget] = useState('FullHyd');
   const [injectErrors, setInjectErrors] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null);
 
-  async function pollJobUntilDone(jobId) {
-    let attempts = 0;
-    while (attempts < 15) {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      attempts++;
-      try {
-        const job = await checkJob(jobId);
-        if (job.status === 'COMPLETED') {
-          return { type: 'success', msg: `Job ${jobId} completed for ${job.target} (100% Valid)` };
-        } else if (job.status === 'COMPLETED_HEALED') {
-          return { type: 'healed', msg: `Job ${jobId} self-healed selector glitch! Repaired venue_name & saved.` };
-        } else if (job.status === 'FAILED') {
-          return { type: 'error', msg: `Job ${jobId} failed: ${job.error_message || 'Unknown error'}` };
-        }
-      } catch (err) {
-        // Continue polling
-      }
-    }
-    return { type: 'success', msg: `Job ${jobId} pipeline executed successfully.` };
-  }
+  if (!isOpen) return null;
 
-  async function handleTrigger() {
-    setLoading(true);
-    setStatus(null);
-    try {
-      const res = await triggerScrape(target, injectErrors);
-      setStatus({
-        type: 'info',
-        msg: `Job ${res.job_id} triggered for ${res.target}... Polling status...`,
-      });
-
-      const finalResult = await pollJobUntilDone(res.job_id);
-      setStatus(finalResult);
-
-      if (onTriggered) onTriggered(res);
-    } catch (err) {
-      setStatus({ type: 'error', msg: err.message });
-    } finally {
-      setLoading(false);
-    }
-  }
+  const handleRun = () => {
+    onTriggerScrape(target, injectErrors);
+  };
 
   return (
-    <div className="trigger-panel" id="trigger-panel">
-      <div className="trigger-info">
-        <h3>
-          <IconTerminal className="inline w-4 h-4 mr-2 text-purple-400" />
-          Scraper Studio & AI Self-Healing Console
-        </h3>
-        <p>Trigger custom Bright Data scrapers against live listing pages. Toggle error injection to test automated AI self-healing selector recovery.</p>
-      </div>
-
-      <div className="trigger-controls">
-        <select
-          className="select-control"
-          value={target}
-          onChange={e => setTarget(e.target.value)}
-          id="trigger-target-select"
-          aria-label="Select scrape target"
-        >
-          {TARGETS.map(t => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
-
-        <label
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '0.82rem',
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={injectErrors}
-            onChange={e => setInjectErrors(e.target.checked)}
-            id="inject-errors-checkbox"
-            style={{ accentColor: 'var(--accent-purple)', cursor: 'pointer' }}
-          />
-          Inject Glitch (Self-Healing Demo)
-        </label>
-
-        <button
-          className="trigger-btn"
-          id="trigger-scrape-btn"
-          onClick={handleTrigger}
-          disabled={loading}
-        >
-          <IconSparkles className="w-4 h-4" />
-          {loading ? 'Executing Pipeline...' : 'Trigger Scraper'}
-        </button>
-
-        {status && (
-          <div
-            className={`trigger-status ${status.type}`}
-            style={{
-              padding: '8px 14px',
-              borderRadius: '9999px',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              background: status.type === 'healed' ? 'rgba(245, 158, 11, 0.15)' : status.type === 'error' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-              color: status.type === 'healed' ? '#f59e0b' : status.type === 'error' ? '#ef4444' : '#10b981',
-              border: `1px solid ${status.type === 'healed' ? 'rgba(245, 158, 11, 0.3)' : status.type === 'error' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`
-            }}
-          >
-            {status.msg}
+    <div className="trigger-modal-overlay">
+      <div className="trigger-modal-card">
+        <div className="modal-header">
+          <div className="modal-title-group">
+            <LightningIcon className="w-5 h-5 text-gold-accent inline-block mr-2" />
+            <h2 className="modal-title font-serif">Bright Data Scraper Console</h2>
           </div>
-        )}
+          <button onClick={onClose} className="modal-close-btn">×</button>
+        </div>
+
+        <div className="modal-body">
+          <div className="form-group">
+            <label className="form-label">TARGET PLATFORM FEED</label>
+            <select
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+              className="form-select"
+            >
+              <option value="FullHyd">FullHyd Collector (c_mt4huvzfl8yupcmb6)</option>
+              <option value="HighApe">HighApe Collector (c_mt4no7jl2hsz0xq1t)</option>
+              <option value="AroundU">AroundU Collector (c_mt4nus5z1nhju2014n)</option>
+              <option value="HydHub">HydHub Custom Feed</option>
+            </select>
+          </div>
+
+          <div className="form-group checkbox-group">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={injectErrors}
+                onChange={(e) => setInjectErrors(e.target.checked)}
+                className="form-checkbox"
+              />
+              <span>Simulate Self-Healing Pipeline Faults (Error Injection)</span>
+            </label>
+          </div>
+
+          <button onClick={handleRun} className="execute-trigger-btn">
+            <LightningIcon className="w-4 h-4 inline-block mr-2" />
+            Trigger Live Scrape Job →
+          </button>
+
+          {/* Active Job Telemetry */}
+          {activeJob && (
+            <div className="active-job-telemetry-box">
+              <div className="telemetry-row">
+                <span className="telemetry-label">JOB IDENTIFIER:</span>
+                <span className="telemetry-val font-mono">{activeJob.job_id}</span>
+              </div>
+              <div className="telemetry-row">
+                <span className="telemetry-label">STATUS:</span>
+                <span className={`status-badge ${activeJob.status.toLowerCase()}`}>
+                  {activeJob.status}
+                </span>
+              </div>
+              {activeJob.log && (
+                <pre className="telemetry-log-output">{activeJob.log}</pre>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

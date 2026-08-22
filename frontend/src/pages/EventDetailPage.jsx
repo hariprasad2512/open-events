@@ -1,146 +1,125 @@
+import React from 'react';
+import { CalendarIcon, LocationIcon, TicketIcon, SourceIcon, DatabaseIcon } from '../components/Icons.jsx';
+
 export default function EventDetailPage({
   event,
-  allEvents = [],
   onBack,
-  onSelectEvent,
-  onSelectVenue,
-  onToggleSave,
-  isSaved = false
+  isSaved = false,
+  onToggleSave
 }) {
   if (!event) return null;
 
-  const primarySource = event.sources?.[0] || {};
+  const {
+    title,
+    category = 'Music',
+    date,
+    time,
+    venue,
+    area,
+    price,
+    description,
+    sources = [],
+    scraped_at
+  } = event;
 
-  // Find related events (same category or area)
-  const relatedEvents = allEvents
-    .filter(e => e.event_id !== event.event_id && (e.category === event.category || e.area === event.area))
-    .slice(0, 3);
+  const primarySource = sources[0] || {};
 
   return (
-    <div className="blueprint-page event-detail-page">
-      {/* ── Screen 04: Breadcrumb Navigation ── */}
-      <div className="detail-breadcrumb-bar">
-        <button onClick={onBack} className="back-btn">
-          ← Back to Discovery
+    <div className="event-detail-story-container">
+      {/* Top Navigation Back Action */}
+      <div className="detail-top-nav">
+        <button onClick={onBack} className="back-nav-btn">
+          ← Return to Index
         </button>
-        <span className="breadcrumb-path">
-          Open Events / {event.category || 'Event'} / {event.event_id?.slice(0, 8)}
-        </span>
+        <button
+          onClick={() => onToggleSave(event)}
+          className={`save-constellation-btn ${isSaved ? 'saved' : ''}`}
+        >
+          {isSaved ? '✦ IN MY CONSTELLATION' : '+ ADD TO CONSTELLATION'}
+        </button>
       </div>
 
-      {/* ── Hero Banner ── */}
-      <div className="event-detail-hero-box">
-        <div className="detail-hero-top">
-          <span className="detail-cat-badge">{event.category || 'Music'}</span>
-          <span className="detail-verified-badge">✦ Verified Source</span>
+      {/* Hero Visual Encounter */}
+      <section className="detail-encounter-hero">
+        <div className="encounter-kicker">
+          <span className="statement-badge">[CULTURAL ARTIFACT]</span>
+          <span className="kicker-category">{category}</span>
         </div>
 
-        <h1 className="detail-event-title">{event.title}</h1>
+        <h1 className="detail-title">{title}</h1>
 
-        <div className="detail-hero-meta-grid">
-          <div className="meta-box">
-            <span className="meta-box-label">Date & Time</span>
-            <span className="meta-box-val">📅 {event.date} at {event.time || '18:00'}</span>
+        {/* Narrative Specs Grid */}
+        <div className="detail-specs-bar">
+          <div className="spec-card">
+            <CalendarIcon className="spec-icon" />
+            <div className="spec-content">
+              <span className="spec-label">DATE & TIME</span>
+              <span className="spec-value">{date} · {time || 'Evening'}</span>
+            </div>
           </div>
 
-          <div
-            onClick={() => onSelectVenue(event.venue || 'Hyderabad Venue', event.area)}
-            className="meta-box venue-clickable"
-          >
-            <span className="meta-box-label">Venue & Locality ↗</span>
-            <span className="meta-box-val">📍 {event.venue || 'Venue TBD'}, {event.area || 'Hyderabad'}</span>
+          <div className="spec-card">
+            <LocationIcon className="spec-icon" />
+            <div className="spec-content">
+              <span className="spec-label">VENUE & LOCALITY</span>
+              <span className="spec-value">{venue} {area ? `(${area})` : ''}</span>
+            </div>
           </div>
 
-          <div className="meta-box">
-            <span className="meta-box-label">Ticket / Access</span>
-            <span className="meta-box-val text-emerald">💳 {event.price || 'Free Entry'}</span>
+          <div className="spec-card">
+            <TicketIcon className="spec-icon" />
+            <div className="spec-content">
+              <span className="spec-label">ENTRY PASS</span>
+              <span className="spec-value">{price || 'Free Entry'}</span>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Primary Action Buttons */}
-        <div className="detail-primary-actions-row">
-          <button
-            onClick={() => onToggleSave(event)}
-            className={`detail-save-btn ${isSaved ? 'is-saved' : ''}`}
-          >
-            {isSaved ? '★ Saved in My Week' : '☆ Save to My Week'}
-          </button>
+      {/* Editorial Content Flow */}
+      <section className="detail-narrative-section">
+        <div className="narrative-body">
+          <h2 className="section-subheading">Event Overview & Context</h2>
+          <p className="description-paragraph">
+            {description || 'Details are held by the original event organizer on public platforms. Refer to provenance feeds below.'}
+          </p>
+        </div>
+
+        {/* Scraper Provenance Panel */}
+        <div className="scraper-provenance-panel">
+          <div className="provenance-header">
+            <DatabaseIcon className="w-4 h-4 text-gold-accent inline-block mr-2" />
+            <span>SCRAPER PROVENANCE METADATA</span>
+          </div>
+
+          <div className="provenance-grid">
+            <div className="prov-item">
+              <span className="prov-label">PRIMARY FEED SOURCE</span>
+              <span className="prov-val">{primarySource.site_name || 'FullHyd / HighApe / AroundU'}</span>
+            </div>
+            <div className="prov-item">
+              <span className="prov-label">SCRAPE TIMESTAMP</span>
+              <span className="prov-val">{scraped_at || 'Verified Live Feed'}</span>
+            </div>
+            <div className="prov-item">
+              <span className="prov-label">EVENT IDENTIFIER</span>
+              <span className="prov-val font-mono">{event.event_id}</span>
+            </div>
+          </div>
 
           {primarySource.source_url && (
             <a
               href={primarySource.source_url}
               target="_blank"
-              rel="noreferrer"
-              className="detail-source-link-btn"
+              rel="noopener noreferrer"
+              className="open-source-url-btn"
             >
-              <span>Open Original Source</span>
-              <span className="btn-arrow">↗</span>
+              <SourceIcon className="w-4 h-4 inline-block mr-2" />
+              Visit Original Source Page →
             </a>
           )}
         </div>
-      </div>
-
-      {/* ── Main Content Grid: Description & Source Provenance ── */}
-      <div className="detail-content-grid">
-        <div className="detail-main-col">
-          <section className="detail-section-box">
-            <h2 className="detail-section-title">Event Overview & Description</h2>
-            <p className="detail-body-text">
-              {event.description || 'No detailed blurb provided for this listing. Verified directly from public source website.'}
-            </p>
-          </section>
-
-          {/* Related Discovery Section */}
-          {relatedEvents.length > 0 && (
-            <section className="detail-section-box">
-              <h2 className="detail-section-title">Related Discovery</h2>
-              <div className="related-cards-grid">
-                {relatedEvents.map(rel => (
-                  <div
-                    key={rel.event_id}
-                    onClick={() => onSelectEvent(rel)}
-                    className="related-event-card"
-                  >
-                    <span className="rel-cat">{rel.category}</span>
-                    <h3 className="rel-title">{rel.title}</h3>
-                    <span className="rel-loc">📍 {rel.venue} ({rel.date})</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
-
-        {/* Sidebar: Source Provenance & Freshness (Figma Wireframe Requirement) */}
-        <aside className="detail-sidebar-col">
-          <div className="provenance-panel-card">
-            <div className="panel-title">[SOURCE PROVENANCE]</div>
-            <div className="provenance-item">
-              <span className="p-label">Primary Source Platform</span>
-              <span className="p-val">{primarySource.site_name || 'AroundU / FullHyd'}</span>
-            </div>
-            <div className="provenance-item">
-              <span className="p-label">Original Source URL</span>
-              <a
-                href={primarySource.source_url || '#'}
-                target="_blank"
-                rel="noreferrer"
-                className="p-url-link"
-              >
-                {primarySource.source_url || 'https://aroundu.in'}
-              </a>
-            </div>
-            <div className="provenance-item">
-              <span className="p-label">Last Verified Timestamp</span>
-              <span className="p-val">2026-08-23T00:48:22Z</span>
-            </div>
-            <div className="provenance-item">
-              <span className="p-label">Data Verification Status</span>
-              <span className="p-val text-emerald">✦ Active / Verified</span>
-            </div>
-          </div>
-        </aside>
-      </div>
+      </section>
     </div>
   );
 }

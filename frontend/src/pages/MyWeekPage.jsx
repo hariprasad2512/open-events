@@ -1,139 +1,105 @@
-import { useMemo } from 'react';
+import React, { useState } from 'react';
+import EventCard from '../components/EventCard.jsx';
+import { ConstellationIcon, TimelineIcon } from '../components/Icons.jsx';
 
-export default function MyWeekPage({
-  savedEvents = [],
-  onRemoveSave,
-  onSelectEvent,
-  onNavigate
-}) {
-  // Group saved events by date
-  const eventsByDate = useMemo(() => {
-    const map = {};
-    savedEvents.forEach(evt => {
-      const d = evt.date || 'Upcoming';
-      if (!map[d]) map[d] = [];
-      map[d].push(evt);
-    });
-    return map;
-  }, [savedEvents]);
-
-  // Conflict detection: detect overlapping times on the same date
-  const conflictPairs = useMemo(() => {
-    const conflicts = new Set();
-    Object.keys(eventsByDate).forEach(d => {
-      const dayList = eventsByDate[d];
-      const timeSeen = {};
-      dayList.forEach(e => {
-        const t = e.time || '18:00';
-        if (timeSeen[t]) {
-          conflicts.add(e.event_id);
-          conflicts.add(timeSeen[t]);
-        } else {
-          timeSeen[t] = e.event_id;
-        }
-      });
-    });
-    return conflicts;
-  }, [eventsByDate]);
+export default function MyWeekPage({ savedEvents = [], onSelectEvent, onRemoveSaved }) {
+  const [viewMode, setViewMode] = useState('constellation'); // 'constellation' | 'timeline'
 
   return (
-    <div className="blueprint-page my-week-page">
-      {/* Screen 06 Header */}
-      <div className="my-week-header">
-        <div className="my-week-title-box">
-          <span className="telemetry-badge">[06 MY WEEK // PERSONAL ITINERARY]</span>
-          <h1 className="my-week-heading">My Saved Itinerary</h1>
-          <p className="my-week-subtext">
-            Personal timeline with conflict detection and overlapping schedule warnings.
-          </p>
+    <div className="constellation-page-container">
+      {/* Editorial Header */}
+      <section className="constellation-header-hero">
+        <div className="header-kicker">
+          <span className="statement-badge">[PERSONAL OBSERVATORY]</span>
+          <span className="kicker-meta">{savedEvents.length} ORBITING NODES</span>
         </div>
 
-        <div className="week-nav-controls">
-          <button className="week-nav-btn">← Previous Week</button>
-          <span className="current-week-label">Current Week (Aug 23 - Aug 30)</span>
-          <button className="week-nav-btn">Next Week →</button>
-        </div>
-      </div>
+        <h1 className="constellation-title">
+          My Cultural Constellation.
+        </h1>
 
-      {/* Conflict Warning Banner if conflicts exist */}
-      {conflictPairs.size > 0 && (
-        <div className="conflict-warning-banner">
-          <span className="banner-icon">⚠️</span>
-          <div className="banner-text">
-            <strong>Schedule Conflict Detected:</strong> You have {conflictPairs.size} overlapping events scheduled at the exact same time on your timeline!
-          </div>
-        </div>
-      )}
+        <p className="constellation-subtitle">
+          Your personal collection of saved cultural signals, floating in an orbiting temporal space around your observer node.
+        </p>
 
-      {/* Empty State */}
-      {savedEvents.length === 0 ? (
-        <div className="empty-my-week-box">
-          <div className="empty-icon">⭐</div>
-          <h2 className="empty-title">Your week collection is empty</h2>
-          <p className="empty-desc">
-            Save events from the Discover or Calendar screens to build your personal itinerary.
-          </p>
+        {/* View Switcher Controls */}
+        <div className="view-switcher-bar">
           <button
-            onClick={() => onNavigate('discover')}
-            className="empty-cta-btn"
+            onClick={() => setViewMode('constellation')}
+            className={`switcher-btn ${viewMode === 'constellation' ? 'active' : ''}`}
           >
-            Find Something Around This Time →
+            <ConstellationIcon className="w-4 h-4 inline-block mr-2" />
+            <span>CONSTELLATION</span>
+          </button>
+          <button
+            onClick={() => setViewMode('timeline')}
+            className={`switcher-btn ${viewMode === 'timeline' ? 'active' : ''}`}
+          >
+            <TimelineIcon className="w-4 h-4 inline-block mr-2" />
+            <span>TIMELINE</span>
           </button>
         </div>
-      ) : (
-        <div className="saved-stream-container">
-          {Object.keys(eventsByDate).map(date => (
-            <div key={date} className="saved-day-group">
-              <h2 className="saved-date-heading">📅 {date}</h2>
-              <div className="saved-day-events-list">
-                {eventsByDate[date].map(evt => {
-                  const hasConflict = conflictPairs.has(evt.event_id);
+      </section>
 
-                  return (
-                    <div
-                      key={evt.event_id}
-                      className={`saved-event-row ${hasConflict ? 'is-conflict' : ''}`}
-                    >
-                      <div className="row-time-col">
-                        <span className="row-time">{evt.time || '18:00'}</span>
-                        {hasConflict && (
-                          <span className="row-conflict-badge">⚠️ Time Conflict</span>
-                        )}
-                      </div>
+      {/* Orbiting Space Canvas View or Linear Grid */}
+      {viewMode === 'constellation' ? (
+        <section className="constellation-space-canvas">
+          <div className="center-user-observer-node">
+            <span className="observer-glyph">✦</span>
+            <span className="observer-label">YOU</span>
+          </div>
 
-                      <div className="row-main-col">
-                        <span className="row-cat">{evt.category}</span>
-                        <h3
-                          onClick={() => onSelectEvent(evt)}
-                          className="row-title-clickable"
-                        >
-                          {evt.title}
-                        </h3>
-                        <span className="row-venue">📍 {evt.venue || 'Venue TBD'} ({evt.area})</span>
-                      </div>
+          <div className="orbiting-nodes-ring">
+            {savedEvents.map((evt, idx) => {
+              const angle = (idx / Math.max(savedEvents.length, 1)) * 360;
+              const radius = 180 + (idx % 3) * 35;
+              const x = Math.cos((angle * Math.PI) / 180) * radius;
+              const y = Math.sin((angle * Math.PI) / 180) * radius;
 
-                      <div className="row-actions-col">
-                        <button
-                          onClick={() => onSelectEvent(evt)}
-                          className="row-inspect-btn"
-                        >
-                          Inspect →
-                        </button>
-                        <button
-                          onClick={() => onRemoveSave(evt.event_id)}
-                          className="row-remove-btn"
-                          title="Remove from My Week"
-                        >
-                          ✕ Remove
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              return (
+                <div
+                  key={evt.event_id || idx}
+                  className="orbit-node-item"
+                  style={{
+                    transform: `translate(${x}px, ${y}px)`
+                  }}
+                  onClick={() => onSelectEvent(evt)}
+                >
+                  <div className="node-dot-symbol">
+                    {evt.category.toLowerCase().includes('music') ? '✿' : evt.category.toLowerCase().includes('art') ? '✦' : '◉'}
+                  </div>
+                  <div className="node-tooltip-label">
+                    {evt.title}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {savedEvents.length === 0 && (
+            <div className="empty-constellation-msg">
+              <ConstellationIcon className="w-10 h-10 text-gold-accent opacity-40 mb-3" />
+              <h3>Your constellation space is empty.</h3>
+              <p>Explore the Gallery Wall or City Timeline to pin events into your observatory.</p>
             </div>
-          ))}
-        </div>
+          )}
+        </section>
+      ) : (
+        <section className="constellation-grid-section">
+          <div className="featured-cards-grid">
+            {savedEvents.map((evt) => (
+              <div key={evt.event_id} className="saved-card-wrapper">
+                <EventCard event={evt} onClick={() => onSelectEvent(evt)} />
+                <button
+                  onClick={() => onRemoveSaved(evt.event_id)}
+                  className="remove-node-btn"
+                >
+                  Remove Node ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );
