@@ -1,4 +1,30 @@
 import { getCategoryMeta, ALL_CATEGORIES } from '../lib/constants.js';
+import {
+  IconMusic,
+  IconTheatre,
+  IconWorkshops,
+  IconSports,
+  IconFood,
+  IconTalks,
+  IconNightlife,
+  IconFamily,
+  IconExhibitions,
+  IconSparkles
+} from './Icons.jsx';
+
+function renderCategoryIcon(iconType) {
+  switch (iconType) {
+    case 'music': return <IconMusic className="w-4 h-4" />;
+    case 'theatre': return <IconTheatre className="w-4 h-4" />;
+    case 'workshops': return <IconWorkshops className="w-4 h-4" />;
+    case 'sports': return <IconSports className="w-4 h-4" />;
+    case 'food': return <IconFood className="w-4 h-4" />;
+    case 'nightlife': return <IconNightlife className="w-4 h-4" />;
+    case 'family': return <IconFamily className="w-4 h-4" />;
+    case 'exhibitions': return <IconExhibitions className="w-4 h-4" />;
+    default: return <IconTalks className="w-4 h-4" />;
+  }
+}
 
 export default function DigestPanel({ stats, categoryBreakdown }) {
   if (!stats) return null;
@@ -8,20 +34,14 @@ export default function DigestPanel({ stats, categoryBreakdown }) {
   return (
     <section className="digest-section" id="weekly-digest">
       <h2 className="section-heading">
-        <span
-          className="section-heading-icon"
-          style={{ background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.3)' }}
-        >
-          📊
+        <span className="section-heading-icon">
+          <IconSparkles className="w-5 h-5 text-purple-400" />
         </span>
-        Weekly Digest
+        Weekly Intelligence Digest
       </h2>
 
       {/* Summary stats */}
-      <div
-        className="stats-bar"
-        style={{ marginBottom: '1.5rem', maxWidth: '100%' }}
-      >
+      <div className="stats-bar" style={{ marginBottom: '2rem', maxWidth: '100%' }}>
         <div className="stat-item">
           <div className="stat-value">{stats.total ?? '—'}</div>
           <div className="stat-label">Total Events</div>
@@ -50,8 +70,8 @@ export default function DigestPanel({ stats, categoryBreakdown }) {
             return (
               <div className="category-bar-row" key={cat}>
                 <div className="category-bar-label">
-                  <span>{meta.icon}</span>
-                  {cat}
+                  {renderCategoryIcon(meta.iconType)}
+                  <span>{cat}</span>
                 </div>
                 <div className="category-bar-track">
                   <div

@@ -7,7 +7,7 @@
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-async function apiFetch(path, options = {}) {
+async function apiFetch(path: string, options: RequestInit = {}) {
   const res = await fetch(`${BASE_URL}${path}`, options);
   if (!res.ok) {
     const detail = await res.json().catch(() => ({ detail: res.statusText }));
@@ -25,10 +25,10 @@ export async function fetchHealth() {
 
 /**
  * GET /events/fixture
- * Loads and normalizes the real scraped fixture data for UI development.
- * @param {object} params - { category, area, limit }
+ * Loads normalized events from the real scraped dataset fixture (data/fixtures/scraped_mock_data.json).
+ * Contains 200+ real events from FullHyd, HighApe, AroundU.
  */
-export async function fetchFixtureEvents({ category, area, limit = 200 } = {}) {
+export async function fetchFixtureEvents({ category, area, limit = 300 }: { category?: string; area?: string; limit?: number } = {}) {
   const params = new URLSearchParams();
   if (category) params.set('category', category);
   if (area)     params.set('area', area);
@@ -39,10 +39,9 @@ export async function fetchFixtureEvents({ category, area, limit = 200 } = {}) {
 
 /**
  * GET /events
- * Loads events from the live database (post-scrape).
- * @param {object} params - { category, area, limit }
+ * Loads events from the live database (populated post-scrape).
  */
-export async function fetchEvents({ category, area, limit = 100 } = {}) {
+export async function fetchEvents({ category, area, limit = 300 }: { category?: string; area?: string; limit?: number } = {}) {
   const params = new URLSearchParams();
   if (category) params.set('category', category);
   if (area)     params.set('area', area);
@@ -68,17 +67,25 @@ export async function fetchCategories() {
 /**
  * GET /events/:event_id
  */
-export async function fetchEventById(eventId) {
+export async function fetchEventById(eventId: string) {
   return apiFetch(`/events/${eventId}`);
 }
 
 /**
  * POST /dca/trigger
  * Triggers a background scrape run.
- * @param {string} target - "FullHyd" | "HydHub" | "AroundU"
- * @param {boolean} injectErrors - Whether to inject validation errors for demo
+ * @param target - "FullHyd" | "HighApe" | "AroundU"
+ * @param injectErrors - Whether to inject validation errors for demo
  */
-export async function triggerScrape(target = 'FullHyd', injectErrors = false) {
+export async function triggerScrape(target: string = 'FullHyd', injectErrors: boolean = false) {
   const params = new URLSearchParams({ target, inject_errors: String(injectErrors) });
   return apiFetch(`/dca/trigger?${params.toString()}`, { method: 'POST' });
+}
+
+/**
+ * GET /dca/jobs/:job_id
+ * Returns status and progress of a background scraping job.
+ */
+export async function checkJob(jobId: string) {
+  return apiFetch(`/dca/jobs/${jobId}`);
 }
