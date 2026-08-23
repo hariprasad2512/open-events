@@ -274,21 +274,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="sv-footer-action-col font-mono">
-            <button
-              type="button"
-              className="sv-mode-switch-btn"
-              onClick={() => {
-                const nextMode = mode === 'fixture' ? 'database' : 'fixture';
-                setMode(nextMode);
-                load(nextMode);
-              }}
-              title="Toggle between Normalized Fixture and Live Pipeline Database"
-            >
-              <span>FEED: {mode === 'fixture' ? 'FIXTURE ARCHIVE' : 'LIVE DATABASE'}</span>
-              <span className="ml-1 text-saffron">↗</span>
-            </button>
-          </div>
+            
         </div>
       </footer>
 

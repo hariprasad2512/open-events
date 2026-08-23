@@ -38,10 +38,7 @@ export default function CalendarPage({
     <div className="sv-calendar-page">
       {/* Header */}
       <section className="sv-page-header">
-        <div className="sv-header-kicker font-mono">
-          <span className="sv-badge-tag">[TEMPORAL HORIZON]</span>
-          <span className="sv-meta-count">{events.length} CHRONOLOGICAL SIGNALS</span>
-        </div>
+        
 
         <h1 className="sv-page-title font-serif">Timeline of the City.</h1>
         <p className="sv-page-desc">
@@ -57,7 +54,6 @@ export default function CalendarPage({
               onClick={() => setSelectedDate('All')}
             >
               <span className="sv-date-day font-mono">ALL</span>
-              <span className="sv-date-sub">FULL HORIZON</span>
             </button>
 
             {uniqueDates.map((dateStr) => {

@@ -33,10 +33,7 @@ export default function VenuePage({
     <div className="sv-venue-page">
       {/* Header */}
       <section className="sv-page-header">
-        <div className="sv-header-kicker font-mono">
-          <span className="sv-badge-tag">[CULTURAL PULSE]</span>
-          <span className="sv-meta-count">{venueMap.length} VERIFIED VENUES</span>
-        </div>
+       
 
         <h1 className="sv-page-title font-serif">Places with a Pulse.</h1>
         <p className="sv-page-desc">

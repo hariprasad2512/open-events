@@ -15,7 +15,6 @@ export default function FluidNavbar({
     { key: 'discover', label: 'All Events' },
     { key: 'calendar', label: 'Timeline' },
     { key: 'venues', label: 'Venues' },
-    { key: 'my-week', label: 'Constellation', count: savedCount }
   ];
 
   const handleNav = (key) => {
