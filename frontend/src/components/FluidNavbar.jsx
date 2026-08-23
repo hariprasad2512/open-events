@@ -83,6 +83,7 @@ export default function FluidNavbar({
     { key: 'discover', label: 'Events' },
     { key: 'calendar', label: 'Timeline' },
     { key: 'venues', label: 'Venues' },
+    { key: 'about', label: 'About Us' },
   ];
 
   const handleNav = (key) => { onNavigate(key); setMobileMenuOpen(false); };

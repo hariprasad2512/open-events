@@ -15,6 +15,7 @@ import CalendarPage from './pages/CalendarPage.jsx';
 import VenuePage from './pages/VenuePage.jsx';
 import MyWeekPage from './pages/MyWeekPage.jsx';
 import EventDetailPage from './pages/EventDetailPage.jsx';
+import AboutUsPage from './pages/AboutUsPage.jsx';
 
 export default function App() {
   const [data, setData] = useState(null);
@@ -182,6 +183,10 @@ export default function App() {
           onNavigate={navigateTo}
         />
       );
+    }
+
+    if (page === 'about') {
+      return <AboutUsPage />;
     }
 
     // Default: Home page
