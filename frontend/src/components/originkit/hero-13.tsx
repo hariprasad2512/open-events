@@ -5,7 +5,7 @@ import { ArrowRightIcon, CalendarIcon, LightningIcon } from '../Icons.jsx';
 /**
  * Hero13 Component (Originkit / Shadcnblocks Hero-13)
  * 
- * Left-aligned high-impact editorial hero with wide outline badge,
+ * Left-aligned high-impact editorial hero with minimal brand provenance badge,
  * oversized headline, restrained paragraph, dual action controls,
  * and an interactive 3D spatial celestial observatory window.
  */
@@ -20,16 +20,18 @@ export default function Hero13({
       <div className="sv-hero13-container">
         {/* Left Column: Hero 13 Content */}
         <div className="sv-hero13-left">
-          {/* Stretched Outline Badge with Icon Chip */}
-          <div className="sv-hero13-badge font-mono">
-            <span className="sv-hero13-badge-chip">
-              <span className="sv-pill-pulse-dot" />
-            </span>
-            <span className="sv-hero13-badge-text">
-              SYS_ACTIVE // HYDERABAD_GRID // 17.3850° N
-            </span>
-            <span className="sv-hero13-badge-arrow">→</span>
-          </div>
+          {/* Minimalist Bright Data Provenance Badge */}
+          <a
+            href="https://brightdata.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sv-hero-minimal-badge font-mono"
+            title="Web Scraping powered by Bright Data"
+          >
+            <span className="sv-hero-badge-dot" />
+            <span className="sv-hero-badge-text">POWERED BY BRIGHT DATA</span>
+            <span className="sv-hero-badge-arrow">↗</span>
+          </a>
 
           {/* Aggressive High-Impact Headline */}
           <h1 className="sv-hero13-headline font-serif">
@@ -39,7 +41,7 @@ export default function Hero13({
 
           {/* Restrained Muted Paragraph */}
           <p className="sv-hero13-lead">
-            A digitized cultural observatory indexing real-time events across Hyderabad. Verified venues, acoustic gigs, pottery labs, and comedy cellars — curated with zero duplicate clutter.
+            A digitized cultural observatory indexing real-time events across Hyderabad. Web scraping infrastructure powered by <a href="https://brightdata.com" target="_blank" rel="noopener noreferrer" className="sv-brand-link font-medium">Bright Data</a> — curated with verified venues and zero duplicate clutter.
           </p>
 
           {/* Dual Action Controls */}
@@ -73,13 +75,13 @@ export default function Hero13({
             </div>
             <div className="sv-hero13-proof-sep">/</div>
             <div className="sv-hero13-proof-item">
-              <span className="sv-hero13-proof-num text-jade">46</span>
-              <span className="sv-hero13-proof-label">VERIFIED VENUES</span>
+              <span className="sv-hero13-proof-num text-jade">BRIGHT DATA</span>
+              <span className="sv-hero13-proof-label">SCRAPING PIPELINE</span>
             </div>
             <div className="sv-hero13-proof-sep">/</div>
             <div className="sv-hero13-proof-item">
-              <span className="sv-hero13-proof-num text-amber">03</span>
-              <span className="sv-hero13-proof-label">CRAWL DAEMONS</span>
+              <span className="sv-hero13-proof-num text-amber">HYD</span>
+              <span className="sv-hero13-proof-label">COVERAGE</span>
             </div>
           </div>
         </div>

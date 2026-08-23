@@ -571,6 +571,71 @@ a {
   transform: translateY(-1px);
 }
 
+/* Minimalist Bright Data Provenance Pill (Blue Theme) */
+.sv-hero-minimal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 5px 14px;
+  border-radius: 100px;
+  background: rgba(0, 82, 255, 0.08);
+  border: 1px solid rgba(0, 82, 255, 0.28);
+  color: #93C5FD;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 24px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.sv-hero-minimal-badge:hover {
+  background: rgba(0, 82, 255, 0.16);
+  border-color: rgba(0, 82, 255, 0.5);
+  color: #BFDBFE;
+  box-shadow: 0 0 20px rgba(0, 82, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.sv-hero-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3B82F6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
+}
+
+.sv-hero-badge-text {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.sv-hero-badge-arrow {
+  font-size: 0.75rem;
+  color: #60A5FA;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.sv-hero-minimal-badge:hover .sv-hero-badge-arrow {
+  transform: translate(2px, -2px);
+  color: #93C5FD;
+}
+
+.sv-brand-link {
+  color: #60A5FA;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(96, 165, 250, 0.35);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.sv-brand-link:hover {
+  color: #93C5FD;
+  border-color: #93C5FD;
+}
+
 .sv-hero13-badge-chip {
   display: inline-grid;
   place-items: center;

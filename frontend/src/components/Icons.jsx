@@ -271,3 +271,40 @@ export function CategoryGlyph({ category, className = "w-4 h-4", ...props }) {
   }
   return <SparklesIcon className={className} {...props} />;
 }
+
+// Official Bright Data Minimalist Brand Icon & Wordmark
+export function BrightDataIcon({ className = "w-4 h-4", ...props }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <rect x="3" y="3" width="4.5" height="18" rx="1.5" fill="#0052FF" />
+      <rect x="10" y="8.5" width="4.5" height="12.5" rx="1.5" fill="#0052FF" />
+      <rect x="17" y="3" width="4.5" height="18" rx="1.5" fill="#0052FF" />
+      <circle cx="12.25" cy="4.75" r="2.25" fill="#FF4D00" />
+    </svg>
+  );
+}
+
+export function BrightDataLogo({ className = "h-4 w-auto", ...props }) {
+  return (
+    <svg className={className} viewBox="0 0 135 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }} {...props}>
+      {/* Geometric mark */}
+      <rect x="2" y="3" width="4.2" height="18" rx="1.5" fill="#0052FF" />
+      <rect x="9" y="8.5" width="4.2" height="12.5" rx="1.5" fill="#0052FF" />
+      <rect x="16" y="3" width="4.2" height="18" rx="1.5" fill="#0052FF" />
+      <circle cx="11.1" cy="4.75" r="2.2" fill="#FF4D00" />
+      {/* Clean minimal typography */}
+      <text
+        x="27"
+        y="17"
+        fill="currentColor"
+        fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+        fontSize="14.5"
+        fontWeight="600"
+        letterSpacing="-0.02em"
+      >
+        bright<tspan fontWeight="400" fill="currentColor" opacity="0.85"> data</tspan>
+      </text>
+    </svg>
+  );
+}
+
