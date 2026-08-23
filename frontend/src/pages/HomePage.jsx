@@ -110,8 +110,18 @@ export default function HomePage({
 
       {/* ── SECTION 01: SPOTLIGHT ── */}
       <section className="sv-section">
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h2 className="sv-section-title font-serif" style={{ fontSize: '3rem' }}>The city, in focus.</h2>
+        <div className="sv-section-head">
+          <div>
+            <h2 className="sv-section-title font-serif">The city, in focus.</h2>
+          </div>
+          <button
+            type="button"
+            className="sv-text-link font-mono"
+            onClick={() => onNavigate('discover')}
+          >
+            <span>VIEW ALL</span>
+            <ArrowRightIcon className="w-4 h-4" />
+          </button>
         </div>
 
         <div className="sv-spotlight-grid">
@@ -149,7 +159,7 @@ export default function HomePage({
           ))}
         </div>
 
-        <div className="sv-center-cta-wrap" style={{ marginTop: '3rem' }}>
+        <div className="sv-center-cta-wrap">
           <button
             type="button"
             className="sv-primary-btn font-mono"
@@ -166,8 +176,10 @@ export default function HomePage({
 
       {/* ── SECTION 03: LIVE FEED ── */}
       <section className="sv-section">
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h2 className="sv-section-title font-serif" style={{ fontSize: '3rem' }}>Living event gallery.</h2>
+        <div className="sv-section-head">
+          <div>
+            <h2 className="sv-section-title font-serif">Living event gallery.</h2>
+          </div>
         </div>
 
         {/* Category Filter Pills */}
@@ -206,8 +218,10 @@ export default function HomePage({
 
       {/* ── SECTION 05: FAQ ACCORDION ── */}
       <section className="sv-section">
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h2 className="sv-section-title font-serif" style={{ fontSize: '3rem' }}>Frequently asked questions.</h2>
+        <div className="sv-section-head">
+          <div>
+            <h2 className="sv-section-title font-serif">Frequently asked questions.</h2>
+          </div>
         </div>
 
         <div className="sv-faq-grid">

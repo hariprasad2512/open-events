@@ -17,8 +17,9 @@ export default function Hero13({
 }) {
   return (
     <section className="sv-hero13-root">
-      <div className="sv-hero13-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '4rem' }}>
-        <div className="sv-hero13-left" style={{ alignItems: 'center', maxWidth: '800px' }}>
+      <div className="sv-hero13-container">
+        {/* Left Column: Hero 13 Content */}
+        <div className="sv-hero13-left">
           {/* Minimalist Bright Data Provenance Badge */}
           <a
             href="https://brightdata.com"
@@ -44,7 +45,7 @@ export default function Hero13({
           </p>
 
           {/* Dual Action Controls */}
-          <div className="sv-hero13-actions font-mono" style={{ justifyContent: 'center' }}>
+          <div className="sv-hero13-actions font-mono">
             <button
               type="button"
               className="sv-hero13-btn-primary"
@@ -67,7 +68,7 @@ export default function Hero13({
           </div>
 
           {/* Real-time Telemetry Proof Metrics Bar */}
-          <div className="sv-hero13-proof font-mono" style={{ justifyContent: 'center' }}>
+          <div className="sv-hero13-proof font-mono">
             <div className="sv-hero13-proof-item">
               <span className="sv-hero13-proof-num text-saffron">{totalCount}</span>
               <span className="sv-hero13-proof-label">LIVE SIGNALS</span>
@@ -86,7 +87,7 @@ export default function Hero13({
         </div>
 
         {/* Right Column: Interactive 3D Spatial Observatory Window */}
-        <div className="sv-hero13-visual sv-hud-frame" style={{ width: '100%', maxWidth: '800px', margin: '0 auto', height: '400px' }}>
+        <div className="sv-hero13-visual sv-hud-frame">
           <span className="sv-hud-reticle top-left">+</span>
           <span className="sv-hud-reticle top-right">+</span>
           <span className="sv-hud-reticle bottom-left">+</span>
@@ -96,10 +97,8 @@ export default function Hero13({
 
           <div className="sv-art-center-badge font-mono">
             <strong className="font-serif">HYD</strong>
-            <span>17.3850° N</span>
+            
           </div>
-
-          
         </div>
       </div>
     </section>
