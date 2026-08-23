@@ -142,30 +142,7 @@ export default function FluidNavbar({
             }}>openevents</span>
           </a>
 
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: '6px',
-            height: '24px', padding: '0 10px', borderRadius: '100px',
-            background: 'rgba(168,85,247,0.15)',
-            border: '1px solid rgba(168,85,247,0.35)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 0 12px rgba(168,85,247,0.25)',
-            fontFamily: 'Inter, system-ui, sans-serif',
-            textTransform: 'uppercase',
-            animation: 'sv-nav-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1s both',
-          }}>
-            <span style={{
-              width: '6px', height: '6px', borderRadius: '50%',
-              background: '#d8b4fe', boxShadow: '0 0 10px #d8b4fe', flexShrink: 0,
-              animation: 'sv-glass-pulse 2s infinite ease-in-out',
-            }} />
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-              <span style={{ fontSize: '0.55rem', fontWeight: 600, color: '#d8b4fe', letterSpacing: '0.04em' }}>Hyderabad</span>
-              <span style={{
-                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                fontSize: '0.62rem', fontWeight: 700, color: '#f3e8ff',
-                letterSpacing: '0.1em', textShadow: '0 2px 10px rgba(233,213,255,0.6)'
-              }}>LIVE</span>
-            </div>
-          </div>
+          
         </div>
 
         {/* Desktop Nav — sliding pill indicator */}
@@ -369,7 +346,6 @@ function GlassConsoleBtn({ onOpenConsole }) {
         transition: 'all 0.20s ease',
       }}
     >
-      <LightningIcon className="w-3.5 h-3.5" style={{ color: '#f59e0b' }} />
       <span>Data Console</span>
     </button>
   );
@@ -397,7 +373,7 @@ function GlassCtaBtn({ onNav }) {
         transition: 'all 0.22s cubic-bezier(0.23,1,0.32,1)',
       }}
     >
-      <span>Explore   Events</span>
+      <span>Explore  Events</span>
       <span style={{ fontSize: '1rem', lineHeight: 1 }}>↗</span>
     </button>
   );
