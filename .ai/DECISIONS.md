@@ -1,6 +1,6 @@
 # DECISIONS.md
 
-> Record of important project decisions for Scrapeverse — City Leisure Events Aggregator.
+> Record of important project decisions for OpenEvents — City Leisure Events Aggregator.
 
 ---
 
@@ -13,7 +13,7 @@
 **Date:** 2026-08-22  
 
 ### Decision
-The project will build **Scrapeverse — City Leisure Events Aggregator** for the pilot city of Hyderabad.  
+The project will build **OpenEvents — City Leisure Events Aggregator** for the pilot city of Hyderabad.  
 The system collects leisure events (music, theatre, workshops, meetups, sports, food, art) from multiple independent event-listing sites, normalizes them into a unified schema, de-duplicates records across sources, and serves a weekly digest.
 
 ---

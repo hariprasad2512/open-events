@@ -16,7 +16,7 @@
 
 # 2. Project Status
 
-The project is currently building **Scrapeverse — City Leisure Events Aggregator** for the pilot city of Hyderabad.
+The project is currently building **OpenEvents — City Leisure Events Aggregator** for the pilot city of Hyderabad.
 
 The system continuously collects leisure events (music, theatre, workshops, meetups, sports, food, art) from multiple independent, publicly accessible event-listing websites (FullHyd Events, HydHub, AroundU), normalizes them into a unified schema, de-duplicates records across sources using fuzzy matching, and serves them via an API and weekly digest UI.
 
@@ -80,7 +80,7 @@ Weekly Digest Dashboard
 
 # 6. What Is Finalized
 
-- Product Idea: Scrapeverse — City Leisure Events Aggregator
+- Product Idea: OpenEvents — City Leisure Events Aggregator
 - Target Pilot City: Hyderabad
 - Core 3 MVP Sources: FullHyd, HydHub, AroundU
 - Unified Event Data Schema & Category Taxonomy

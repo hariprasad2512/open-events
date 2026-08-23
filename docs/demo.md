@@ -1,11 +1,11 @@
 # Hackathon Demo Script
 
-> Step-by-step demonstration script for Scrapeverse — City Leisure Events Aggregator (Hyderabad Pilot).
+> Step-by-step demonstration script for OpenEvents — City Leisure Events Aggregator (Hyderabad Pilot).
 
 ---
 
 ## Step 1 — Overview & Target Sources
-- Introduce Scrapeverse: Aggregating leisure events (music, theatre, workshops, meetups, sports, food, art) for Hyderabad across FullHyd, HydHub, and AroundU.
+- Introduce OpenEvents: Aggregating leisure events (music, theatre, workshops, meetups, sports, food, art) for Hyderabad across FullHyd, HydHub, and AroundU.
 
 ---
 

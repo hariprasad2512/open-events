@@ -1,6 +1,6 @@
 # API Contract
 
-> Public Application API Contract for Scrapeverse — City Leisure Events Aggregator.
+> Public Application API Contract for OpenEvents — City Leisure Events Aggregator.
 
 Base URL: `http://localhost:8000`
 

@@ -1,84 +1,136 @@
+import React, { useState, useMemo } from 'react';
+import EventCard from '../components/EventCard.jsx';
+import { LocationIcon, SparklesIcon, CalendarIcon } from '../components/Icons.jsx';
+
 export default function VenuePage({
-  venueName = 'Hyderabad Venue',
-  areaName = 'Hyderabad',
-  allEvents = [],
-  onBack,
-  onSelectEvent
+  events = [],
+  onSelectEvent,
+  savedEvents = [],
+  onToggleSave
 }) {
-  // Find all events taking place at this venue
-  const venueEvents = allEvents.filter(e =>
-    (e.venue || '').toLowerCase().includes(venueName.toLowerCase()) ||
-    (e.area || '').toLowerCase().includes(areaName.toLowerCase())
-  );
+  const [selectedVenue, setSelectedVenue] = useState(null);
+
+  // Group events by venue
+  const venueMap = useMemo(() => {
+    const map = {};
+    events.forEach((e) => {
+      const v = e.venue || 'Independent Venue';
+      if (!map[v]) {
+        map[v] = {
+          name: v,
+          area: e.area || 'Hyderabad',
+          events: []
+        };
+      }
+      map[v].events.push(e);
+    });
+    return Object.values(map).sort((a, b) => b.events.length - a.events.length);
+  }, [events]);
+
+  const activeVenueData = selectedVenue ? venueMap.find((v) => v.name === selectedVenue) : null;
 
   return (
-    <div className="blueprint-page venue-profile-page">
-      {/* Breadcrumbs */}
-      <div className="detail-breadcrumb-bar">
-        <button onClick={onBack} className="back-btn">
-          ← Back to Discovery
-        </button>
-        <span className="breadcrumb-path">
-          Open Events / Venues / {venueName}
-        </span>
-      </div>
-
-      {/* Screen 05 Banner */}
-      <div className="venue-hero-banner">
-        <div className="venue-tag">[05 SOURCE & VENUE PROFILE]</div>
-        <h1 className="venue-title">{venueName}</h1>
-        <p className="venue-locality">📍 Locality Sector: {areaName}, Hyderabad</p>
-        <p className="venue-desc">
-          Verified cultural & leisure venue profile. Aggregating live event listings and provenance metrics.
-        </p>
-
-        {/* Source Provenance Info */}
-        <div className="venue-provenance-strip">
-          <div className="provenance-chip">
-            <span className="p-lbl">Source Health</span>
-            <span className="p-val text-emerald">✦ 99.8% Healthy</span>
-          </div>
-          <div className="provenance-chip">
-            <span className="p-lbl">Active Events</span>
-            <span className="p-val text-cyan">{venueEvents.length} Listings</span>
-          </div>
-          <div className="provenance-chip">
-            <span className="p-lbl">Scraper Status</span>
-            <span className="p-val text-violet">Bright Data Sync OK</span>
-          </div>
+    <div className="sv-venue-page">
+      {/* Header */}
+      <section className="sv-page-header">
+        <div className="sv-header-kicker font-mono">
+          <span className="sv-badge-tag">[CULTURAL PULSE]</span>
+          <span className="sv-meta-count">{venueMap.length} VERIFIED VENUES</span>
         </div>
-      </div>
 
-      {/* Upcoming Events at this Venue */}
-      <div className="venue-events-section">
-        <h2 className="venue-section-heading">Upcoming Events at {venueName}</h2>
+        <h1 className="sv-page-title font-serif">Places with a Pulse.</h1>
+        <p className="sv-page-desc">
+          Curated independent hubs, cultural amphitheatres, gallery lofts, and acoustic spaces hosting live signals across Hyderabad.
+        </p>
+      </section>
 
-        {venueEvents.length === 0 ? (
-          <div className="empty-venue-box">
-            <p>No active upcoming events indexed for this specific venue profile.</p>
-          </div>
-        ) : (
-          <div className="venue-events-grid">
-            {venueEvents.map(evt => (
-              <div
-                key={evt.event_id}
-                onClick={() => onSelectEvent(evt)}
-                className="venue-event-card"
-              >
-                <div className="card-top">
-                  <span className="v-cat">{evt.category}</span>
-                  <span className="v-date">{evt.date}</span>
-                </div>
-                <h3 className="v-title">{evt.title}</h3>
-                <div className="card-footer">
-                  <span className="v-price">{evt.price || 'Free Entry'}</span>
-                  <span className="v-inspect">Inspect Event →</span>
-                </div>
+      {/* Selected Venue Drilldown (if any) */}
+      {activeVenueData ? (
+        <section className="sv-venue-detail-view">
+          <div className="sv-venue-detail-banner">
+            <button
+              type="button"
+              className="sv-detail-back-btn"
+              onClick={() => setSelectedVenue(null)}
+            >
+              <span>←</span> Back to All Venues
+            </button>
+
+            <div className="sv-venue-detail-top">
+              <span className="sv-venue-badge-letter font-serif">
+                {activeVenueData.name.slice(0, 1)}
+              </span>
+              <div>
+                <span className="sv-overline font-mono text-jade">VERIFIED CULTURAL VENUE</span>
+                <h2 className="sv-venue-detail-title font-serif">{activeVenueData.name}</h2>
+                <p className="sv-venue-detail-locality font-mono">
+                  <LocationIcon className="w-4 h-4 inline mr-1 text-saffron" />
+                  {activeVenueData.area}
+                </p>
               </div>
+            </div>
+
+            <div className="sv-venue-provenance-chips font-mono">
+              <div className="sv-prov-chip">
+                <span>CRAWLER HEALTH:</span>
+                <strong className="text-jade">99.8% OK</strong>
+              </div>
+              <div className="sv-prov-chip">
+                <span>ACTIVE SIGNALS:</span>
+                <strong>{activeVenueData.events.length} Events Indexed</strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="sv-venue-events-grid">
+            {activeVenueData.events.map((evt) => (
+              <EventCard
+                key={evt.event_id}
+                event={evt}
+                onClick={() => onSelectEvent(evt)}
+                isSaved={savedEvents.some((s) => s.event_id === evt.event_id)}
+                onToggleSave={onToggleSave}
+              />
             ))}
           </div>
-        )}
-      </div>
+        </section>
+      ) : (
+        /* Grid of Venue Cards */
+        <section className="sv-venue-grid-container">
+          <div className="sv-venues-grid">
+            {venueMap.map((venue) => {
+              const cleanArea = venue.area ? venue.area.split(',')[0].trim() : 'Hyderabad';
+
+              return (
+                <article
+                  key={venue.name}
+                  className="sv-venue-tile-card"
+                  onClick={() => setSelectedVenue(venue.name)}
+                >
+                  <div className="sv-venue-tile-header">
+                    <span className="sv-venue-tile-avatar font-serif">
+                      {venue.name.slice(0, 1)}
+                    </span>
+                    <span className="sv-venue-tile-count font-mono">
+                      {venue.events.length} {venue.events.length === 1 ? 'event' : 'events'}
+                    </span>
+                  </div>
+
+                  <h3 className="sv-venue-tile-name font-serif">{venue.name}</h3>
+
+                  <div className="sv-venue-tile-footer">
+                    <span className="sv-venue-tile-area">
+                      <LocationIcon className="w-3.5 h-3.5 inline mr-1 text-muted" />
+                      {cleanArea}
+                    </span>
+                    <span className="sv-venue-tile-arrow font-mono">View →</span>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

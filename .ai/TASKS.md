@@ -1,6 +1,6 @@
 # TASKS.md
 
-> Single active work board for Scrapeverse — City Leisure Events Aggregator.
+> Single active work board for OpenEvents — City Leisure Events Aggregator.
 
 ---
 

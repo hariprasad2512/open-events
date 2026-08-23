@@ -1,12 +1,12 @@
 # System Architecture
 
-> Technical architecture for Scrapeverse — City Leisure Events Aggregator.
+> Technical architecture for OpenEvents — City Leisure Events Aggregator.
 
 ---
 
 # 1. Purpose
 
-Scrapeverse collects leisure events from multiple independent web listing sites, validates HTML extraction results, normalizes source labels into a Unified Category Taxonomy, de-duplicates cross-listed events using fuzzy token matching, and serves a weekly city events digest.
+OpenEvents collects leisure events from multiple independent web listing sites, validates HTML extraction results, normalizes source labels into a Unified Category Taxonomy, de-duplicates cross-listed events using fuzzy token matching, and serves a weekly city events digest.
 
 ---
 

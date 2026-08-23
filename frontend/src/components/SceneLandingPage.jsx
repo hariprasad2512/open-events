@@ -50,8 +50,8 @@ const FEATURED_REAL_EVENTS = [
 
 const FAQ_ITEMS = [
   {
-    q: 'What sources does Scrapeverse track?',
-    a: 'Scrapeverse currently aggregates FullHyd (events.fullhyderabad.com), HydHub (hydhub.in), and AroundU (aroundu.in) across Hyderabad, with modular scraper blueprints ready for expansion.'
+    q: 'What sources does OpenEvents track?',
+    a: 'OpenEvents currently aggregates FullHyd (events.fullhyderabad.com), HydHub (hydhub.in), and AroundU (aroundu.in) across Hyderabad, with modular scraper blueprints ready for expansion.'
   },
   {
     q: 'How are duplicate events detected across platforms?',
@@ -128,7 +128,7 @@ export default function SceneLandingPage({ onLaunchExplorer }) {
 
             {/* Subheadline (Max width 680px, pretty text wrap) */}
             <p className="hero-subheading">
-              Scrapeverse continuously extracts, normalizes, and deduplicates listings from platforms across Hyderabad so you never miss a concert, meetup, or workshop.
+              OpenEvents continuously extracts, normalizes, and deduplicates listings from platforms across Hyderabad so you never miss a concert, meetup, or workshop.
             </p>
 
             {/* Hero CTAs */}
@@ -213,7 +213,7 @@ export default function SceneLandingPage({ onLaunchExplorer }) {
             <span className="telemetry-badge">[CAPABILITIES // METRICS]</span>
             <h2 className="section-title">Built for high-density event intelligence</h2>
             <p className="section-desc">
-              How Scrapeverse transforms fragmented event listings into an organized stream.
+              How OpenEvents transforms fragmented event listings into an organized stream.
             </p>
           </div>
 
@@ -344,7 +344,7 @@ export default function SceneLandingPage({ onLaunchExplorer }) {
             <span className="telemetry-badge">[KNOWLEDGE BASE // FAQ]</span>
             <h2 className="section-title">Frequently asked questions</h2>
             <p className="section-desc">
-              Everything you need to know about Scrapeverse architecture and data pipeline.
+              Everything you need to know about OpenEvents architecture and data pipeline.
             </p>
           </div>
 
@@ -387,7 +387,7 @@ export default function SceneLandingPage({ onLaunchExplorer }) {
                 onClick={onLaunchExplorer}
                 className="cta-primary-btn"
               >
-                <span>Launch Scrapeverse Explorer</span>
+                <span>Launch OpenEvents Explorer</span>
                 <span className="btn-glow-dot" />
               </button>
             </div>
@@ -402,12 +402,12 @@ export default function SceneLandingPage({ onLaunchExplorer }) {
         <div className="footer-container">
           <div className="footer-brand-col">
             <div className="footer-logo">
-              <span className="logo-spark">✦</span> SCRAPEVERSE
+              <span className="logo-spark">✦</span> OpenEvents
             </div>
             <p className="footer-tagline">
               Resilient city leisure event aggregation powered by Bright Data Scraper Studio & fuzzy deduplication.
             </p>
-            <span className="footer-copy">© 2026 Scrapeverse. All rights reserved.</span>
+            <span className="footer-copy">© 2026 OpenEvents. All rights reserved.</span>
           </div>
 
           <div className="footer-links-group">

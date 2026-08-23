@@ -1,97 +1,135 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import EventCard from '../components/EventCard.jsx';
 import { CalendarIcon, TimelineIcon } from '../components/Icons.jsx';
+import { formatDate } from '../lib/constants.js';
 
-export default function CalendarPage({ events = [], onSelectEvent }) {
+export default function CalendarPage({
+  events = [],
+  onSelectEvent,
+  savedEvents = [],
+  onToggleSave
+}) {
   const [selectedDate, setSelectedDate] = useState('All');
 
   // Extract unique sorted date strings
-  const uniqueDates = Array.from(
-    new Set(events.map((e) => e.date).filter(Boolean))
-  ).sort();
+  const uniqueDates = useMemo(() => {
+    return Array.from(
+      new Set(events.map((e) => e.date).filter(Boolean))
+    ).sort();
+  }, [events]);
 
-  const filteredEvents = selectedDate === 'All'
-    ? events
-    : events.filter((e) => e.date === selectedDate);
+  const filteredEvents = useMemo(() => {
+    if (selectedDate === 'All') return events;
+    return events.filter((e) => e.date === selectedDate);
+  }, [events, selectedDate]);
+
+  // Group events by date for timeline stream
+  const dateGroups = useMemo(() => {
+    const groups = {};
+    filteredEvents.forEach((evt) => {
+      const d = evt.date || 'Upcoming TBA';
+      if (!groups[d]) groups[d] = [];
+      groups[d].push(evt);
+    });
+    return groups;
+  }, [filteredEvents]);
 
   return (
-    <div className="calendar-page-container">
-      {/* Editorial Header */}
-      <section className="calendar-header-hero">
-        <div className="header-kicker">
-          <span className="statement-badge">[TEMPORAL HORIZON]</span>
-          <span className="kicker-meta">{events.length} CHRONOLOGICAL SIGNALS</span>
+    <div className="sv-calendar-page">
+      {/* Header */}
+      <section className="sv-page-header">
+        <div className="sv-header-kicker font-mono">
+          <span className="sv-badge-tag">[TEMPORAL HORIZON]</span>
+          <span className="sv-meta-count">{events.length} CHRONOLOGICAL SIGNALS</span>
         </div>
 
-        <h1 className="calendar-title">
-          Timeline of the City.
-        </h1>
-
-        <p className="calendar-subtitle">
+        <h1 className="sv-page-title font-serif">Timeline of the City.</h1>
+        <p className="sv-page-desc">
           A living temporal schedule mapping cultural events, workshops, concerts, and talks across date coordinates in Hyderabad.
         </p>
 
-        {/* Date Carousel Strip */}
-        <div className="date-horizon-carousel">
-          <button
-            onClick={() => setSelectedDate('All')}
-            className={`date-pill-item ${selectedDate === 'All' ? 'active' : ''}`}
-          >
-            <span className="date-day-num">ALL</span>
-            <span className="date-month-text">SCHEDULE</span>
-          </button>
+        {/* Date Horizon Carousel Bar */}
+        <div className="sv-date-strip-wrapper">
+          <div className="sv-date-strip">
+            <button
+              type="button"
+              className={`sv-date-pill ${selectedDate === 'All' ? 'active' : ''}`}
+              onClick={() => setSelectedDate('All')}
+            >
+              <span className="sv-date-day font-mono">ALL</span>
+              <span className="sv-date-sub">FULL HORIZON</span>
+            </button>
 
-          {uniqueDates.map((dateStr) => {
-            const dateObj = new Date(dateStr);
-            const dayNum = isNaN(dateObj.getDate()) ? '23' : dateObj.getDate();
-            const monthName = isNaN(dateObj.getMonth())
-              ? 'AUG'
-              : dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
-            const weekday = isNaN(dateObj.getDay())
-              ? 'SUN'
-              : dateObj.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+            {uniqueDates.map((dateStr) => {
+              const d = new Date(dateStr);
+              const dayNum = !isNaN(d.getDate()) ? d.getDate() : dateStr.slice(-2);
+              const monthStr = !isNaN(d.getMonth())
+                ? d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase()
+                : 'AUG';
+              const weekday = !isNaN(d.getDay())
+                ? d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()
+                : 'DAY';
 
-            return (
-              <button
-                key={dateStr}
-                onClick={() => setSelectedDate(dateStr)}
-                className={`date-pill-item ${selectedDate === dateStr ? 'active' : ''}`}
-              >
-                <span className="date-day-num">{dayNum}</span>
-                <span className="date-month-text">{monthName} · {weekday}</span>
-              </button>
-            );
-          })}
+              const count = events.filter((e) => e.date === dateStr).length;
+
+              return (
+                <button
+                  key={dateStr}
+                  type="button"
+                  className={`sv-date-pill ${selectedDate === dateStr ? 'active' : ''}`}
+                  onClick={() => setSelectedDate(dateStr)}
+                >
+                  <span className="sv-date-day font-mono">{dayNum}</span>
+                  <span className="sv-date-sub">{monthStr} · {weekday}</span>
+                  <span className="sv-date-count font-mono">{count} events</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </section>
 
-      {/* Living Timeline Schedule Stream */}
-      <section className="calendar-timeline-stream">
-        {filteredEvents.length > 0 ? (
-          filteredEvents.map((evt, idx) => (
-            <div key={evt.event_id || idx} className="timeline-node-row">
-              {/* Left Time Coordinates Marker */}
-              <div className="timeline-time-col">
-                <div className="time-marker-badge">
-                  <CalendarIcon className="w-3.5 h-3.5 inline-block mr-1 text-gold-accent" />
-                  <span>{evt.date || 'UPCOMING'}</span>
+      {/* Living Timeline Stream */}
+      <section className="sv-timeline-stream">
+        {Object.keys(dateGroups).length > 0 ? (
+          Object.entries(dateGroups).map(([dateKey, dayEvents]) => (
+            <div key={dateKey} className="sv-timeline-day-group">
+              {/* Date Column Header */}
+              <div className="sv-timeline-day-marker">
+                <div className="sv-day-badge font-mono">
+                  <CalendarIcon className="w-3.5 h-3.5 text-saffron inline mr-1.5" />
+                  <span>{formatDate(dateKey)}</span>
                 </div>
-                <div className="time-subtext">{evt.time || 'Evening'}</div>
-                <div className="node-orbital-dot" />
+                <span className="sv-day-count font-mono">{dayEvents.length} signals</span>
               </div>
 
-              {/* Event Artifact Card */}
-              <div className="timeline-card-col">
-                <EventCard event={evt} onClick={() => onSelectEvent(evt)} />
+              {/* Event Cards in Day Cluster */}
+              <div className="sv-timeline-cards-row">
+                {dayEvents.map((evt) => (
+                  <div key={evt.event_id} className="sv-timeline-card-wrapper">
+                    <EventCard
+                      event={evt}
+                      onClick={() => onSelectEvent(evt)}
+                      isSaved={savedEvents.some((s) => s.event_id === evt.event_id)}
+                      onToggleSave={onToggleSave}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           ))
         ) : (
-          <div className="no-results-box">
-            <TimelineIcon className="w-8 h-8 text-gold-accent opacity-50 mb-3" />
-            <h3>No events scheduled on this temporal coordinate.</h3>
-            <button onClick={() => setSelectedDate('All')} className="clear-filters-btn">
-              View Full Timeline →
+          <div className="sv-empty-box">
+            <TimelineIcon className="w-10 h-10 text-saffron opacity-60 mb-3" />
+            <h3 className="sv-empty-title font-serif">No events scheduled on this temporal coordinate.</h3>
+            <p className="sv-empty-desc">Select another date from the strip above or view the full timeline schedule.</p>
+            <button
+              type="button"
+              className="sv-primary-btn mt-4"
+              onClick={() => setSelectedDate('All')}
+            >
+              <span>View Full Timeline Schedule</span>
+              <span className="ml-1">→</span>
             </button>
           </div>
         )}

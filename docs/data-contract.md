@@ -1,6 +1,6 @@
 # Data Contract
 
-> Defines raw scraper outputs, validation contracts, normalized event schemas, and merged de-duplicated records for Scrapeverse.
+> Defines raw scraper outputs, validation contracts, normalized event schemas, and merged de-duplicated records for OpenEvents.
 
 ---
 

@@ -1,378 +1,452 @@
-import React, { useEffect, useRef, useState } from 'react';
-import SceneLandingPage from '../components/SceneLandingPage.jsx';
+import React, { useState } from 'react';
+import CityWebGLScene from '../components/CityWebGLScene.jsx';
 import EventCard from '../components/EventCard.jsx';
-import { ArrowRightIcon, CalendarIcon, DatabaseIcon, LightningIcon, SparklesIcon, TicketIcon, SourceIcon } from '../components/Icons.jsx';
+import CategoryFilter from '../components/CategoryFilter.jsx';
+import {
+  ArrowRightIcon,
+  CalendarIcon,
+  DatabaseIcon,
+  LightningIcon,
+  SparklesIcon,
+  TicketIcon,
+  SourceIcon,
+  CheckIcon,
+  CategoryGlyph
+} from '../components/Icons.jsx';
 
 export default function HomePage({
   events = [],
+  data = null,
+  activeCategory = null,
+  onSelectCategory,
+  sortBy = 'date',
+  onSortChange,
   onNavigate,
   onSelectEvent,
-  onSelectCategory,
-  onOpenTriggerPanel
+  onOpenTriggerPanel,
+  savedEvents = [],
+  onToggleSave
 }) {
-  const featuredEvents = events.slice(0, 6);
-  const [taglineProgress, setTaglineProgress] = useState(0);
-  const taglineRef = useRef(null);
+  const [openFaq, setOpenFaq] = useState(null);
 
-  // Tagline reveal animation using IntersectionObserver / smooth scroll
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTaglineProgress(1);
-        }
-      },
-      { threshold: 0.35 }
-    );
+  const totalCount = data?.total || events.length || 248;
+  const featuredEvents = events.slice(0, 3);
+  const feedEvents = events.slice(0, 8);
 
-    if (taglineRef.current) {
-      observer.observe(taglineRef.current);
+  const energies = [
+    {
+      title: 'Live Acoustic & Sound',
+      category: 'Music',
+      tag: '01 / SONIC',
+      desc: 'Indie showcases, progressive techno & sitar jams',
+      bgClass: 'energy-saffron',
+      glyphColor: '#EB5E28'
+    },
+    {
+      title: 'Makers & Tactile Craft',
+      category: 'Workshops & Classes',
+      tag: '02 / CRAFT',
+      desc: 'Terracotta wheel pottery, pastry & inking labs',
+      bgClass: 'energy-jade',
+      glyphColor: '#10B981'
+    },
+    {
+      title: 'Founder Mixers & Ideas',
+      category: 'Talks & Meetups',
+      tag: '03 / MIND',
+      desc: 'Frontier AI gatherings, book salons & debates',
+      bgClass: 'energy-indigo',
+      glyphColor: '#4F46E5'
+    },
+    {
+      title: 'Stage Drama & Comedy',
+      category: 'Theatre & Arts',
+      tag: '04 / DRAMA',
+      desc: 'Original Hindi plays, standup & exhibitions',
+      bgClass: 'energy-violet',
+      glyphColor: '#8B5CF6'
     }
-
-    return () => observer.disconnect();
-  }, []);
-
-  const taglineWords = [
-    "A", "city", "is", "not", "a", "calendar", "grid.",
-    "It", "is", "a", "living", "constellation", "of",
-    "human", "sound,", "material", "craft,", "and",
-    "shared", "thought."
-  ];
-
-  const categories = [
-    { name: 'Music', symbol: '✿', desc: 'Live concerts, sitars, acoustic jams & waveforms', image: '/assets/music_concert_visual.jpg' },
-    { name: 'Theatre & Arts', symbol: '✦', desc: 'Terracotta pottery, canvas paintings & plays', image: '/assets/art_workshop_visual.jpg' },
-    { name: 'Talks & Meetups', symbol: '◉', desc: 'Archival ideas, founder mixers & keynotes', image: '/assets/ideas_talks_visual.jpg' },
-    { name: 'Sports & Outdoors', symbol: '⌁', desc: 'Trekking, outdoor camps & wilderness survival', image: '/assets/hyderabad_cultural_hero.jpg' },
-    { name: 'Family / Kids', symbol: '◆', desc: 'Neighborhood gatherings & community workshops', image: '/assets/hyderabad_cultural_hero.jpg' }
   ];
 
   const faqs = [
     {
-      q: "Where does RASA get its event listings?",
-      a: "RASA uses autonomous Bright Data collectors to index public leisure feeds across FullHyd, HighApe, and AroundU, merging them into one canonical database."
+      q: 'Where does openevents source its event listings?',
+      a: 'openevents operates autonomous Bright Data cloud collectors that continuously crawl public leisure feeds across FullHyd, HighApe, and AroundU, combining them into one unified, normalized database.'
     },
     {
-      q: "Can I book tickets directly on RASA?",
-      a: "RASA is a free discovery observatory. Each event card links directly to the official ticketing source with zero platform markups."
+      q: 'How does fuzzy deduplication remove duplicate events?',
+      a: 'Our pipeline executes fuzzy string matching (Levenshtein & Jaro-Winkler distance) on titles, date coordinates, and venue localities. Multi-source listings are merged into a single verified canonical record with citations for every source.'
     },
     {
-      q: "How does deduplication eliminate duplicate events?",
-      a: "Our pipeline executes fuzzy string matching on titles, dates, and venue coordinates to merge duplicate listings into a single verified entry with multi-source badges."
+      q: 'Can I book tickets directly on openevents?',
+      a: 'openevents is a free public discovery observatory. Every event card provides a direct link to the original ticketing platform or venue organizer with zero platform markups.'
     },
     {
-      q: "How often are event feeds updated?",
-      a: "Collectors run continuously on scheduled cycles and can also be triggered instantly through the Scraper Console."
-    },
-    {
-      q: "Is RASA free to access?",
-      a: "Yes. RASA is completely free and accessible to all cultural seekers with no paywalls or required signups."
-    },
-    {
-      q: "How do I save events for my week?",
-      a: "Click into any event and select '+ ADD TO CONSTELLATION' to pin the signal to your personal spatial observatory."
+      q: 'How often are event feeds updated?',
+      a: 'Collectors run on scheduled background cycles and can also be triggered on-demand via the Scraper Console for real-time verification.'
     }
   ];
 
   return (
-    <div className="landing-page-root">
-      {/* ── SECTION 1: HERO (Above the fold) ── */}
-      <section className="landing-hero-section">
-        <div className="hero-kicker-badge">
-          <span className="kicker-dot" />
-          <span>HYDERABAD CULTURAL OBSERVATORY</span>
-        </div>
+    <div className="sv-home-root">
+      {/* ── HERO SECTION ── */}
+      <section className="sv-hero-section">
+        <div className="sv-hero-grid">
+          {/* Left Hero Copy */}
+          <div className="sv-hero-left">
+            <div className="sv-hero-pill-badge">
+              <span className="sv-pill-pulse-dot" />
+              <span>THE WEEKLY CITY SIGNAL // HYDERABAD</span>
+            </div>
 
-        <h1 className="landing-hero-headline">
-          Discover independent city culture before it sells out
-        </h1>
+            <h1 className="sv-hero-heading font-serif">
+              India’s city <br />
+              <em>in motion.</em>
+            </h1>
 
-        <p className="landing-hero-subheadline">
-          Real-time crawlers aggregate gigs, pottery workshops, theatre plays, and founder meetups across Hyderabad into one living index.
-        </p>
+            <p className="sv-hero-lead">
+              A living cultural layer for everything happening around Hyderabad. Real events, verified venues, zero duplicate clutter — one beautiful way to find your next plan.
+            </p>
 
-        <div className="landing-hero-actions">
-          <button
-            onClick={() => onNavigate('discover')}
-            className="landing-primary-btn"
-          >
-            <span>Explore Live Gallery</span>
-            <ArrowRightIcon className="w-4 h-4 ml-2 inline-block" />
-          </button>
-          <button
-            onClick={() => onNavigate('calendar')}
-            className="landing-secondary-btn"
-          >
-            <span>View City Timeline</span>
-          </button>
-        </div>
+            {/* CTAs */}
+            <div className="sv-hero-actions-row">
+              <button
+                type="button"
+                className="sv-hero-primary-btn"
+                onClick={() => onNavigate('discover')}
+              >
+                <span>Explore Live Gallery</span>
+                <span className="sv-btn-arrow-wrap">
+                  <ArrowRightIcon className="w-4 h-4" />
+                </span>
+              </button>
 
-        {/* Proof Line */}
-        <div className="hero-proof-line">
-          <div className="proof-metric">
-            <span className="proof-num font-mono">{events.length > 0 ? events.length : 128}</span>
-            <span className="proof-label">active cultural signals</span>
+              <button
+                type="button"
+                className="sv-hero-secondary-btn"
+                onClick={() => onNavigate('calendar')}
+              >
+                <CalendarIcon className="w-4 h-4 text-saffron" />
+                <span>Timeline Schedule</span>
+              </button>
+            </div>
+
+            {/* Real-time Proof Metrics */}
+            <div className="sv-hero-proof-bar font-mono">
+              <div className="sv-proof-metric">
+                <span className="sv-proof-num">{totalCount}</span>
+                <span className="sv-proof-label">active signals</span>
+              </div>
+              <div className="sv-proof-sep">/</div>
+              <div className="sv-proof-metric">
+                <span className="sv-proof-num">46</span>
+                <span className="sv-proof-label">verified venues</span>
+              </div>
+              <div className="sv-proof-sep">/</div>
+              <div className="sv-proof-metric">
+                <span className="sv-proof-num">3</span>
+                <span className="sv-proof-label">crawled feeds</span>
+              </div>
+            </div>
           </div>
-          <div className="proof-divider" />
-          <div className="proof-metric">
-            <span className="proof-num font-mono">42</span>
-            <span className="proof-label">verified venues</span>
-          </div>
-          <div className="proof-divider" />
-          <div className="proof-metric">
-            <span className="proof-num font-mono">3</span>
-            <span className="proof-label">crawled platforms</span>
-          </div>
-        </div>
 
-        {/* 3D Visual Artwork Hero Banner */}
-        <div className="landing-hero-artwork-box">
-          <img
-            src="/assets/hyderabad_cultural_hero.jpg"
-            alt="Hyderabad Cultural Sculpture"
-            className="landing-hero-artwork-img"
-          />
-          <div className="landing-hero-artwork-overlay" />
-          <div className="landing-hero-artwork-badge">
-            <SparklesIcon className="w-4 h-4 text-gold-accent inline-block mr-2" />
-            <span>HERO SCULPTURE · CHARMINAR ORBITS</span>
+          {/* Right Hero WebGL Orbit Visual */}
+          <div className="sv-hero-art-container">
+            <div className="sv-art-top-bar font-mono">
+              <span>HYD / 17.3850° N</span>
+              <span className="sv-art-live-pill">● LIVE ORBIT</span>
+            </div>
+
+            {/* 3D WebGL Scene */}
+            <CityWebGLScene />
+
+            {/* Interactive Floating Micro-chips */}
+            <div className="sv-art-chip chip-1 font-mono" onClick={() => { onSelectCategory('Music'); onNavigate('discover'); }}>
+              <CategoryGlyph category="Music" className="w-3 h-3 text-saffron" />
+              <span>MUSIC ORBIT</span>
+            </div>
+            <div className="sv-art-chip chip-2 font-mono" onClick={() => { onSelectCategory('Talks & Meetups'); onNavigate('discover'); }}>
+              <CategoryGlyph category="Talks & Meetups" className="w-3 h-3 text-indigo" />
+              <span>TALKS & MIXERS</span>
+            </div>
+            <div className="sv-art-chip chip-3 font-mono" onClick={() => { onSelectCategory('Theatre & Arts'); onNavigate('discover'); }}>
+              <CategoryGlyph category="Theatre & Arts" className="w-3 h-3 text-violet" />
+              <span>ART & THEATRE</span>
+            </div>
+
+            <div className="sv-art-center-badge">
+              <strong className="font-serif">HYD</strong>
+              <span className="font-mono">cultural orbit</span>
+            </div>
+
+            <div className="sv-art-bottom-bar font-mono">
+              <span>INTERACTIVE 3D MESH</span>
+              <span>SCROLL TO EXPLORE ↓</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── 3D Interactive Canvas ── */}
-      <SceneLandingPage
-        onSelectCategory={(cat) => {
-          onSelectCategory(cat);
-          onNavigate('discover');
-        }}
-      />
+      {/* ── TRUST & PROVENANCE TICKER ── */}
+      <section className="sv-trust-strip font-mono">
+        <div className="sv-trust-item">
+          <span className="sv-trust-dot text-saffron">●</span>
+          <span>BRIGHT DATA AUTONOMOUS CRAWLERS</span>
+        </div>
+        <div className="sv-trust-sep">+</div>
+        <div className="sv-trust-item">
+          <span className="sv-trust-dot text-jade">●</span>
+          <span>FUZZY LEVENSHTEIN DEDUPLICATION</span>
+        </div>
+        <div className="sv-trust-sep">+</div>
+        <div className="sv-trust-item">
+          <span className="sv-trust-dot text-indigo">●</span>
+          <span>MULTI-SOURCE VERIFIED METRIC</span>
+        </div>
+        <div className="sv-trust-counter">
+          <strong>{totalCount}</strong>
+          <small>signals live</small>
+        </div>
+      </section>
 
-      {/* ── SECTION 2: MANDATORY TAGLINE REVEAL (B11) ── */}
-      <section ref={taglineRef} className="tagline-reveal-section">
-        <div className="tagline-kicker">[THE LIVING CITY]</div>
-        <div className="tagline-words-wrap">
-          {taglineWords.map((word, idx) => (
-            <span
-              key={idx}
-              className={`tagline-word ${taglineProgress ? 'active' : ''}`}
-              style={{
-                transitionDelay: `${idx * 45}ms`
-              }}
+      {/* ── SECTION 01: SPOTLIGHT ("The City, in Focus") ── */}
+      <section className="sv-section">
+        <div className="sv-section-head">
+          <div>
+            <span className="sv-overline font-mono">01 / SPOTLIGHT SELECTION</span>
+            <h2 className="sv-section-title font-serif">The city, in focus.</h2>
+          </div>
+          <button
+            type="button"
+            className="sv-text-link"
+            onClick={() => onNavigate('discover')}
+          >
+            <span>See all {totalCount} events</span>
+            <ArrowRightIcon className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="sv-spotlight-grid">
+          {featuredEvents.map((event, idx) => (
+            <article
+              key={event.event_id}
+              className={`sv-spotlight-card spotlight-${idx}`}
+              onClick={() => onSelectEvent(event)}
             >
-              {word}{' '}
-            </span>
+              <img
+                src={event.image || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80'}
+                alt={event.title}
+                className="sv-spotlight-bg"
+              />
+              <div className="sv-spotlight-overlay" />
+              <div className="sv-spotlight-content">
+                <span className="sv-spotlight-tag font-mono">
+                  <CategoryGlyph category={event.category} className="w-3 h-3 inline mr-1" />
+                  {event.category}
+                </span>
+                <h3 className="sv-spotlight-title font-serif">{event.title}</h3>
+                <p className="sv-spotlight-meta">
+                  {event.date} · {event.venue} ({event.area?.split(',')[0] || 'Hyderabad'})
+                </p>
+                <div className="sv-spotlight-cta font-mono">
+                  <span>Inspect Signal ↗</span>
+                </div>
+              </div>
+            </article>
           ))}
         </div>
       </section>
 
-      {/* ── SECTION 3: PROBLEM VS SOLUTION ── */}
-      <section className="problem-solution-section">
-        <div className="section-header-block">
-          <span className="statement-badge">[THE SHIFT]</span>
-          <h2 className="section-title">Built for explorers, not ticket brokers</h2>
-          <p className="section-subtitle">
-            How RASA transforms scattered commercial feeds into a unified cultural archive.
-          </p>
-        </div>
-
-        <div className="comparison-grid">
-          <div className="comparison-card traditional">
-            <h3 className="comparison-card-title">Traditional Walled Gardens</h3>
-            <ul className="comparison-list">
-              <li>Scattered across 5+ different booking apps</li>
-              <li>Same event listed multiple times with conflicting dates</li>
-              <li>Algorithms push commercial stadium tours over local craft</li>
-              <li>No transparent crawl or provenance metadata</li>
-            </ul>
-          </div>
-
-          <div className="comparison-card rasa-way">
-            <h3 className="comparison-card-title">The RASA Observatory</h3>
-            <ul className="comparison-list">
-              <li>Single unified index for all independent city leisure</li>
-              <li>Fuzzy deduplication merges duplicate listings automatically</li>
-              <li>Equal visibility for clay workshops, jazz gigs, and talks</li>
-              <li>Full scraper provenance with collector IDs and timestamps</li>
-            </ul>
+      {/* ── SECTION 02: DISCOVER BY ENERGY ── */}
+      <section className="sv-section">
+        <div className="sv-section-head">
+          <div>
+            <span className="sv-overline font-mono">02 / DISCOVER BY ENERGY</span>
+            <h2 className="sv-section-title font-serif">Find your kind of frequency.</h2>
           </div>
         </div>
-      </section>
 
-      {/* ── SECTION 4: OUTCOME BENEFITS ── */}
-      <section className="benefits-section">
-        <div className="section-header-block">
-          <span className="statement-badge">[CORE BENEFITS]</span>
-          <h2 className="section-title">Everything you need to navigate city culture</h2>
-        </div>
-
-        <div className="benefits-grid">
-          <div className="benefit-card">
-            <div className="benefit-icon-box">
-              <SparklesIcon className="w-5 h-5 text-gold-accent" />
-            </div>
-            <h3 className="benefit-title">Unified City Index</h3>
-            <p className="benefit-desc">
-              Stop switching between five different ticketing portals. Every independent gig, comedy night, and pottery workshop is organized in one place.
-            </p>
-          </div>
-
-          <div className="benefit-card">
-            <div className="benefit-icon-box">
-              <DatabaseIcon className="w-5 h-5 text-cyan-accent" />
-            </div>
-            <h3 className="benefit-title">Zero Duplicate Noise</h3>
-            <p className="benefit-desc">
-              Multi-source cross-posted events are automatically merged into clean canonical records with verifiable source citations.
-            </p>
-          </div>
-
-          <div className="benefit-card">
-            <div className="benefit-icon-box">
-              <CalendarIcon className="w-5 h-5 text-purple-glow" />
-            </div>
-            <h3 className="benefit-title">Living Temporal Horizon</h3>
-            <p className="benefit-desc">
-              Explore your week chronologically or switch to personal spatial constellation mode to plan your cultural calendar effortlessly.
-            </p>
-          </div>
-
-          <div className="benefit-card">
-            <div className="benefit-icon-box">
-              <LightningIcon className="w-5 h-5 text-rose-glow" />
-            </div>
-            <h3 className="benefit-title">Scraper Provenance</h3>
-            <p className="benefit-desc">
-              Inspect exact crawl timestamps, collector IDs, and direct organizer links on every artifact for complete data transparency.
-            </p>
-          </div>
+        <div className="sv-energy-grid">
+          {energies.map((item) => (
+            <button
+              key={item.title}
+              type="button"
+              className={`sv-energy-card ${item.bgClass}`}
+              onClick={() => {
+                onSelectCategory(item.category);
+                onNavigate('discover');
+              }}
+            >
+              <div className="sv-energy-card-top">
+                <span className="sv-energy-tag font-mono">{item.tag}</span>
+                <span className="sv-energy-glyph-wrap" style={{ color: item.glyphColor }}>
+                  <CategoryGlyph category={item.category} className="w-5 h-5" />
+                </span>
+              </div>
+              <div className="sv-energy-card-bottom">
+                <strong className="sv-energy-title font-serif">{item.title}</strong>
+                <p className="sv-energy-desc">{item.desc}</p>
+                <span className="sv-energy-action font-mono">Explore category ↗</span>
+              </div>
+            </button>
+          ))}
         </div>
       </section>
 
-      {/* ── SECTION 5: HOW IT WORKS ── */}
-      <section className="how-it-works-section">
-        <div className="section-header-block">
-          <span className="statement-badge">[THE PIPELINE]</span>
-          <h2 className="section-title">How raw web feeds become cultural artifacts</h2>
-        </div>
-
-        <div className="steps-row">
-          <div className="step-card">
-            <span className="step-number font-mono">01</span>
-            <h3 className="step-title">Autonomous Crawl</h3>
-            <p className="step-desc">
-              Bright Data collectors stream raw event feeds from FullHyd, HighApe, and AroundU on scheduled intervals.
-            </p>
+      {/* ── SECTION 03: LIVE FEED ── */}
+      <section className="sv-section">
+        <div className="sv-section-head">
+          <div>
+            <span className="sv-overline font-mono">03 / FRESH FROM THE INDEX</span>
+            <h2 className="sv-section-title font-serif">More to explore.</h2>
           </div>
 
-          <div className="step-card">
-            <span className="step-number font-mono">02</span>
-            <h3 className="step-title">Fuzzy Deduplication</h3>
-            <p className="step-desc">
-              The processing pipeline normalizes date coordinates, standardizes price tiers, and reconciles duplicate listings.
-            </p>
-          </div>
-
-          <div className="step-card">
-            <span className="step-number font-mono">03</span>
-            <h3 className="step-title">Artistic Rendering</h3>
-            <p className="step-desc">
-              Cleaned event signals are styled into collectible poster artifacts with category-specific visual textures.
-            </p>
+          <div className="sv-sort-wrapper">
+            <label className="sv-sort-label font-mono">SORT BY:</label>
+            <select
+              value={sortBy}
+              onChange={(e) => onSortChange(e.target.value)}
+              className="sv-sort-select"
+              aria-label="Sort events"
+            >
+              <option value="date">Chronological (Soonest)</option>
+              <option value="price">Lowest Price First</option>
+              <option value="category">Category Taxonomy</option>
+            </select>
           </div>
         </div>
-      </section>
 
-      {/* ── SECTION 6: LIVE GALLERY PREVIEW ── */}
-      <section className="live-preview-section">
-        <div className="section-header-block">
-          <span className="statement-badge">[CURATED GALLERY]</span>
-          <h2 className="section-title">Happening this week in Hyderabad</h2>
-          <p className="section-subtitle">
-            Live cultural signals indexed and ready for exploration.
-          </p>
-        </div>
+        {/* Category Filter Pills */}
+        <CategoryFilter
+          activeCategory={activeCategory}
+          onChange={onSelectCategory}
+        />
 
-        <div className="featured-cards-grid">
-          {featuredEvents.map((evt) => (
+        {/* Event Cards Grid */}
+        <div className="sv-event-card-grid">
+          {feedEvents.map((evt) => (
             <EventCard
               key={evt.event_id}
               event={evt}
               onClick={() => onSelectEvent(evt)}
+              isSaved={savedEvents.some((s) => s.event_id === evt.event_id)}
+              onToggleSave={onToggleSave}
             />
           ))}
         </div>
 
-        <div className="view-all-cta-wrap">
+        <div className="sv-center-cta-wrap">
           <button
+            type="button"
+            className="sv-primary-btn"
             onClick={() => onNavigate('discover')}
-            className="landing-primary-btn"
           >
-            <span>View All {events.length} Events</span>
-            <ArrowRightIcon className="w-4 h-4 ml-2 inline-block" />
+            <span>View All Discovered Events ({totalCount})</span>
+            <ArrowRightIcon className="w-4 h-4 ml-2" />
           </button>
         </div>
       </section>
 
-      {/* ── SECTION 7: FAQ SECTION ── */}
-      <section className="landing-faq-section">
-        <div className="section-header-block">
-          <span className="statement-badge">[FREQUENTLY ASKED QUESTIONS]</span>
-          <h2 className="section-title">Answers to common questions</h2>
+      {/* ── SECTION 04: HOW IT WORKS PIPELINE ── */}
+      <section className="sv-section sv-pipeline-section">
+        <div className="sv-section-head">
+          <div>
+            <span className="sv-overline font-mono">04 / THE ENGINE</span>
+            <h2 className="sv-section-title font-serif">How raw web feeds become clean cultural signals.</h2>
+          </div>
         </div>
 
-        <div className="faq-grid">
-          {faqs.map((faq, idx) => (
-            <div key={idx} className="faq-card">
-              <h3 className="faq-question">{faq.q}</h3>
-              <p className="faq-answer">{faq.a}</p>
-            </div>
-          ))}
+        <div className="sv-pipeline-grid">
+          <div className="sv-pipeline-card">
+            <span className="sv-pipeline-num font-mono">01</span>
+            <h3 className="sv-pipeline-title">Autonomous Crawl</h3>
+            <p className="sv-pipeline-desc">
+              Bright Data Scraping Cloud collectors continuously extract raw event listings, ticket tiers, and venue coordinates from FullHyd, HighApe, and AroundU.
+            </p>
+          </div>
+
+          <div className="sv-pipeline-card">
+            <span className="sv-pipeline-num font-mono">02</span>
+            <h3 className="sv-pipeline-title">Fuzzy Deduplication</h3>
+            <p className="sv-pipeline-desc">
+              Our backend normalizes dates into ISO 8601, cleans HTML artifacts, and applies Levenshtein string matching to merge cross-posted duplicates into a single verified entry.
+            </p>
+          </div>
+
+          <div className="sv-pipeline-card">
+            <span className="sv-pipeline-num font-mono">03</span>
+            <h3 className="sv-pipeline-title">Living Constellation</h3>
+            <p className="sv-pipeline-desc">
+              Signals are rendered with rich category textures and available for real-time spatial exploration, timeline scheduling, and personal week bookmarking.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* ── SECTION 8: FINAL CONVERSION ACTION ── */}
-      <section className="final-cta-section">
-        <div className="final-cta-box">
-          <span className="statement-badge">[START EXPLORING]</span>
-          <h2 className="final-cta-title">
-            Enter Hyderabad's living cultural archive
+      {/* ── SECTION 05: FAQ ACCORDION ── */}
+      <section className="sv-section">
+        <div className="sv-section-head">
+          <div>
+            <span className="sv-overline font-mono">05 / KNOWLEDGE BASE</span>
+            <h2 className="sv-section-title font-serif">Frequently asked questions.</h2>
+          </div>
+        </div>
+
+        <div className="sv-faq-grid">
+          {faqs.map((faq, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div
+                key={idx}
+                className={`sv-faq-item ${isOpen ? 'open' : ''}`}
+                onClick={() => setOpenFaq(isOpen ? null : idx)}
+              >
+                <div className="sv-faq-question-row">
+                  <h3 className="sv-faq-q">{faq.q}</h3>
+                  <span className="sv-faq-toggle-icon font-mono">{isOpen ? '−' : '+'}</span>
+                </div>
+                {isOpen && (
+                  <p className="sv-faq-answer">{faq.a}</p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ── SECTION 06: FINAL CONVERSION CTA ── */}
+      <section className="sv-final-banner">
+        <div className="sv-final-banner-inner">
+          <span className="sv-overline font-mono text-saffron">START EXPLORING</span>
+          <h2 className="sv-final-title font-serif">
+            Enter Hyderabad’s living cultural archive.
           </h2>
-          <p className="final-cta-subtitle">
-            Explore independent gigs, pottery workshops, comedy cellars, and talks across the city.
+          <p className="sv-final-sub">
+            Discover gigs, pottery workshops, comedy cellars, and talks across the city.
           </p>
-          <div className="landing-hero-actions">
+
+          <div className="sv-final-actions">
             <button
+              type="button"
+              className="sv-hero-primary-btn"
               onClick={() => onNavigate('discover')}
-              className="landing-primary-btn"
             >
-              <span>Explore Live Gallery</span>
-              <ArrowRightIcon className="w-4 h-4 ml-2 inline-block" />
+              <span>Explore Gallery Wall</span>
+              <span className="sv-btn-arrow-wrap">
+                <ArrowRightIcon className="w-4 h-4" />
+              </span>
             </button>
             <button
+              type="button"
+              className="sv-hero-secondary-btn"
               onClick={onOpenTriggerPanel}
-              className="landing-secondary-btn"
             >
+              <LightningIcon className="w-4 h-4 text-saffron" />
               <span>Open Scraper Console</span>
             </button>
           </div>
         </div>
       </section>
-
-      {/* ── SECTION 9: FOOTER ── */}
-      <footer className="landing-footer">
-        <div className="footer-inner">
-          <div className="footer-brand">
-            <span className="footer-logo font-serif">RASA</span>
-            <p className="footer-tagline">Hyderabad Cultural Observatory & Event Archive</p>
-          </div>
-          <div className="footer-meta font-mono">
-            <span>DATA SOURCE: BRIGHT DATA COLLECTORS</span>
-            <span>·</span>
-            <span>STATUS: LIVE FEEDS ACTIVE</span>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

@@ -6,7 +6,7 @@ const RAW_LOGS = [
   `[00:48:23] HEALTH_VALIDATOR: Schema check PASS [title: OK, date: OK, area: OK]`,
   `[00:48:24] PARSER: Extracted "LITJAM Hyderabad: Pyaar & Dosti Jam" -> Venue: Jammin Junction`,
   `[00:48:24] DEDUP_ENGINE: Matching title against SQLite cache... 1 duplicate merged`,
-  `[00:48:25] DB_SYNC: 38 unique events written to sqlite:///scrapeverse.db`,
+  `[00:48:25] DB_SYNC: 38 unique events written to sqlite:///OpenEvents.db`,
   `[00:48:25] DIGEST_GEN: Weekly digest updated for Hyderabad (9 categories active)`
 ];
 
