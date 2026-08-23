@@ -64,7 +64,7 @@ export default function MyWeekPage({
         (e, i) => `${i + 1}. [${e.category}] ${e.title}\n   📅 ${formatDate(e.date)} · ${e.time || 'Time TBA'}\n   📍 ${e.venue} (${e.area || 'Hyderabad'})\n   🎟️ ${formatPrice(e.price)}`
       ),
       '---------------------------------------',
-      'Curated on openevents (Hyderabad City Signal)'
+      'Curated on openevents (Hyderabad City EVENT)'
     ].join('\n\n');
 
     navigator.clipboard.writeText(text);
@@ -76,10 +76,7 @@ export default function MyWeekPage({
     <div className="sv-my-week-page">
       {/* Editorial Header */}
       <section className="sv-page-header">
-        <div className="sv-header-kicker font-mono">
-          <span className="sv-badge-tag">[PERSONAL OBSERVATORY]</span>
-          <span className="sv-meta-count">{savedEvents.length} ORBITING NODES</span>
-        </div>
+        
 
         <h1 className="sv-page-title font-serif">My Cultural Constellation.</h1>
         <p className="sv-page-desc">

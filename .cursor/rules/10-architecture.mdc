@@ -19,7 +19,7 @@ Scraper / Bright Data Cloud
 ## ARCHITECTURAL RULES
 
 1. **Frontend Isolation**: The frontend never directly consumes raw scraper output. It consumes processed intelligence from application API routes.
-2. **Scoring Isolation**: The scoring engine operates on normalized signal data, never on Bright Data raw response shapes.
+2. **Scoring Isolation**: The scoring engine operates on normalized EVENT data, never on Bright Data raw response shapes.
 3. **Pipeline Data Flow**: `RAW DATA ➔ VALIDATE ➔ NORMALIZE ➔ HISTORICAL STORAGE ➔ INTELLIGENCE ➔ API ➔ FRONTEND`
 4. **Architecture Changes**: Any architectural modification requires updating `docs/architecture.md` before or alongside implementation.
 5. **Cross-Layer Integrity**: When changing a data format or route, update `docs/data-contract.md`, `docs/api-contract.md`, schemas, and affected tests together.

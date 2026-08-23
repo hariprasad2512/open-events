@@ -15,7 +15,7 @@ export default function CategoryFilter({ activeCategory, onChange, counts = {} }
         <span className="sv-pill-icon-wrap">
           <SparklesIcon className="w-3.5 h-3.5" />
         </span>
-        <span className="sv-pill-text">All Signals</span>
+        <span className="sv-pill-text">All Events</span>
         {counts['All'] !== undefined && (
           <span className="sv-pill-count">{counts['All']}</span>
         )}

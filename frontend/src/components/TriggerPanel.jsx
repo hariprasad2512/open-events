@@ -97,7 +97,7 @@ export default function TriggerPanel({
             </span>
             <div>
               <h2 className="sv-console-title">Bright Data Scraper Console</h2>
-              <p className="sv-console-sub">Autonomous Web Scraper Orchestration & Self-Healing Pipeline</p>
+              <p className="sv-console-sub">  Scrape Self-Healing Data</p>
             </div>
           </div>
           <button
@@ -115,8 +115,7 @@ export default function TriggerPanel({
           {/* Target Selector */}
           <div className="sv-form-group">
             <label className="sv-form-label">
-              <span>TARGET SCRAPER COLLECTOR</span>
-              <span className="sv-label-meta font-mono">BRIGHT_DATA_API // v2</span>
+              <span>SCRAPE LIVE DATA</span>
             </label>
             <div className="sv-collector-grid">
               {collectors.map((c) => (
@@ -128,9 +127,7 @@ export default function TriggerPanel({
                 >
                   <div className="sv-collector-btn-top">
                     <span className="sv-collector-name">{c.label}</span>
-                    <span className="sv-collector-rate font-mono">{c.rate}</span>
                   </div>
-                  <span className="sv-collector-id font-mono">{c.collectorId}</span>
                   <span className="sv-collector-region">{c.region}</span>
                 </button>
               ))}
@@ -138,22 +135,7 @@ export default function TriggerPanel({
           </div>
 
           {/* Fault Simulation Checkbox */}
-          <div className="sv-form-group">
-            <label className="sv-checkbox-label">
-              <input
-                type="checkbox"
-                checked={injectErrors}
-                onChange={(e) => setInjectErrors(e.target.checked)}
-                className="sv-checkbox"
-              />
-              <div>
-                <span className="sv-checkbox-title">Simulate Self-Healing Pipeline Faults (Error Injection)</span>
-                <span className="sv-checkbox-desc">
-                  Injects simulated malformed date coordinates and broken HTML tags to demonstrate autonomous regex recovery & fallback sanitization.
-                </span>
-              </div>
-            </label>
-          </div>
+         
 
           {/* Action Button */}
           <button
@@ -170,7 +152,7 @@ export default function TriggerPanel({
             ) : (
               <>
                 <LightningIcon className="w-4 h-4 text-saffron inline mr-2" />
-                <span>Trigger Autonomous Scrape Job ({target}) →</span>
+                <span>Trigger The Scrape Job ({target}) →</span>
               </>
             )}
           </button>
@@ -185,7 +167,7 @@ export default function TriggerPanel({
               </div>
               <div className="sv-terminal-title font-mono">
                 <TerminalIcon className="w-3.5 h-3.5 inline mr-1 opacity-70" />
-                TELEMETRY LOG STREAM // {target}
+                TELEMETRY LOG STREAM {target}
               </div>
               <div className="sv-terminal-status font-mono">
                 {isRunning ? 'STATUS: ACTIVE_STREAM' : logs.length ? 'STATUS: IDLE_VERIFIED' : 'STATUS: READY'}
@@ -219,26 +201,7 @@ export default function TriggerPanel({
           </div>
 
           {/* Pipeline Results Summary Metrics */}
-          {stats.rawCount > 0 && (
-            <div className="sv-stats-bar">
-              <div className="sv-stat-item">
-                <span className="sv-stat-label">RAW DOCUMENTS</span>
-                <span className="sv-stat-value font-mono">{stats.rawCount}</span>
-              </div>
-              <div className="sv-stat-item">
-                <span className="sv-stat-label">DUPLICATES MERGED</span>
-                <span className="sv-stat-value font-mono text-amber">{stats.mergedCount}</span>
-              </div>
-              <div className="sv-stat-item">
-                <span className="sv-stat-label">CANONICAL SAVED</span>
-                <span className="sv-stat-value font-mono text-jade">{stats.dedupedCount}</span>
-              </div>
-              <div className="sv-stat-item">
-                <span className="sv-stat-label">EXECUTION TIME</span>
-                <span className="sv-stat-value font-mono">{stats.elapsedMs} ms</span>
-              </div>
-            </div>
-          )}
+          
         </div>
       </div>
     </div>

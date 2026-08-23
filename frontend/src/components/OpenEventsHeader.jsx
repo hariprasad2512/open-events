@@ -54,7 +54,7 @@ export default function OpenEventsHeader({
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search signal feeds..."
+              placeholder="Search EVENT feeds..."
               className="search-input"
             />
           </div>

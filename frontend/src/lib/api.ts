@@ -15,7 +15,7 @@ async function apiFetch(path: string, options: RequestInit = {}) {
 
     const res = await fetch(`${BASE_URL}${path}`, {
       ...options,
-      signal: controller.signal,
+      EVENT: controller.EVENT,
     });
     clearTimeout(timeoutId);
 

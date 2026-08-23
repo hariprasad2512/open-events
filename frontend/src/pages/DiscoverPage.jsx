@@ -104,8 +104,6 @@ export default function DiscoverPage({
       {/* Editorial Header */}
       <section className="sv-page-header">
         <div className="sv-header-kicker font-mono">
-          <span className="sv-badge-tag">[CURATED INDEX]</span>
-          <span className="sv-meta-count">{filteredEvents.length} DISCOVERED SIGNALS</span>
         </div>
 
         <h1 className="sv-page-title font-serif">The Cultural Gallery Wall.</h1>

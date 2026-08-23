@@ -18,7 +18,7 @@
 2. **Act 1 (Focus / Spotlight):** Curated gig & workshop spotlights with specular glare.
 3. **Act 2 (Frequency Channels):** Sonic, Tactile Craft, Founder Mind, Stage Drama cards.
 4. **Act 3 (The Living Wall):** Real-time event index floating on Morphing Rings.
-5. **Act 4 (The Signal Engine):** Crawl → Deduplication → Constellation timeline.
+5. **Act 4 (The EVENT Engine):** Crawl → Deduplication → Constellation timeline.
 6. **Act 5 (Horizon / Peak):** Deep obsidian cultural callout & Scraper trigger console.
 
 ### Q3: The energy curve
