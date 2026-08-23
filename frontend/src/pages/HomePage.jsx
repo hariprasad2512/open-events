@@ -110,18 +110,8 @@ export default function HomePage({
 
       {/* ── SECTION 01: SPOTLIGHT ── */}
       <section className="sv-section">
-        <div className="sv-section-head">
-          <div>
-            <h2 className="sv-section-title font-serif">The city, in focus.</h2>
-          </div>
-          <button
-            type="button"
-            className="sv-text-link font-mono"
-            onClick={() => onNavigate('discover')}
-          >
-            <span>VIEW ALL</span>
-            <ArrowRightIcon className="w-4 h-4" />
-          </button>
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h2 className="sv-section-title font-serif" style={{ fontSize: '3rem' }}>The city, in focus.</h2>
         </div>
 
         <div className="sv-spotlight-grid">
@@ -158,6 +148,17 @@ export default function HomePage({
             </article>
           ))}
         </div>
+
+        <div className="sv-center-cta-wrap" style={{ marginTop: '3rem' }}>
+          <button
+            type="button"
+            className="sv-primary-btn font-mono"
+            onClick={() => onNavigate('discover')}
+          >
+            <span>VIEW ALL FEATURED</span>
+            <ArrowRightIcon className="w-4 h-4 ml-2" />
+          </button>
+        </div>
       </section>
 
       {/* ── SECTION 02: DISCOVER BY ENERGY ── */}
@@ -165,12 +166,8 @@ export default function HomePage({
 
       {/* ── SECTION 03: LIVE FEED ── */}
       <section className="sv-section">
-        <div className="sv-section-head">
-          <div>
-            <h2 className="sv-section-title font-serif">Living event gallery.</h2>
-          </div>
-
-          
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h2 className="sv-section-title font-serif" style={{ fontSize: '3rem' }}>Living event gallery.</h2>
         </div>
 
         {/* Category Filter Pills */}
@@ -209,10 +206,8 @@ export default function HomePage({
 
       {/* ── SECTION 05: FAQ ACCORDION ── */}
       <section className="sv-section">
-        <div className="sv-section-head">
-          <div>
-            <h2 className="sv-section-title font-serif">Frequently asked questions.</h2>
-          </div>
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h2 className="sv-section-title font-serif" style={{ fontSize: '3rem' }}>Frequently asked questions.</h2>
         </div>
 
         <div className="sv-faq-grid">
@@ -248,21 +243,25 @@ export default function HomePage({
       </section>
 
       {/* ── SECTION 06: FINAL CONVERSION CTA ── */}
-      <section className="sv-final-banner sv-hud-card">
+      <section className="sv-final-banner sv-hud-card" style={{ 
+        textAlign: 'center', 
+        background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(10, 14, 40, 0.4) 100%)',
+        boxShadow: '0 24px 64px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1), 0 0 60px rgba(255, 255, 255, 0.03)'
+      }}>
         <span className="sv-hud-reticle top-left">+</span>
         <span className="sv-hud-reticle top-right">+</span>
         <span className="sv-hud-reticle bottom-left">+</span>
         <span className="sv-hud-reticle bottom-right">+</span>
 
-        <div className="sv-final-banner-inner">
-            <h2 className="sv-final-title font-serif">
+        <div className="sv-final-banner-inner" style={{ padding: '3rem 0' }}>
+            <h2 className="sv-final-title font-serif" style={{ fontSize: '3.5rem', marginBottom: '1.5rem', background: 'linear-gradient(to right, #ffffff, #9ca3af)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Enter Hyderabad’s living cultural archive.
           </h2>
           <p className="sv-final-sub">
             Discover gigs, pottery workshops, comedy cellars, and talks across the city in real time.
           </p>
 
-          <div className="sv-final-actions font-mono">
+          <div className="sv-final-actions font-mono" style={{ justifyContent: 'center' }}>
             <button
               type="button"
               className="sv-hero-primary-btn"
@@ -279,7 +278,7 @@ export default function HomePage({
               onClick={onOpenTriggerPanel}
             >
               <LightningIcon className="w-4 h-4 text-saffron" />
-              <span>LAUNCH DATA CONSOLE</span>
+              <span>BRIGHT DATA CONSOLE</span>
             </button>
           </div>
         </div>
