@@ -1,265 +1,318 @@
-import { useState, useEffect, useMemo } from 'react';
-import { fetchFixtureEvents } from './lib/api.ts';
-import EventCard from './components/EventCard.jsx';
-import CategoryFilter from './components/CategoryFilter.jsx';
-import DigestPanel from './components/DigestPanel.jsx';
+import React, { useEffect, useState, useMemo } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { fetchEvents, fetchFixtureEvents } from './lib/api.ts';
+
+// Components
+import FluidNavbar from './components/FluidNavbar.jsx';
+import SearchModal from './components/SearchModal.jsx';
 import TriggerPanel from './components/TriggerPanel.jsx';
 
+// Pages
+import HomePage from './pages/HomePage.jsx';
+import DiscoverPage from './pages/DiscoverPage.jsx';
+import CalendarPage from './pages/CalendarPage.jsx';
+import VenuePage from './pages/VenuePage.jsx';
+import MyWeekPage from './pages/MyWeekPage.jsx';
+import EventDetailPage from './pages/EventDetailPage.jsx';
+
 export default function App() {
-  const [data, setData] = useState(null);      // raw API response
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [mode, setMode] = useState('fixture'); // 'fixture' | 'database'
 
-  const [activeCategory, setActiveCategory] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('date'); // 'date' | 'price' | 'category'
+  // Navigation State
+  const [page, setPage] = useState('home'); // 'home' | 'discover' | 'calendar' | 'venues' | 'my-week' | 'detail'
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  // Load events from fixture endpoint on mount
-  async function loadEvents() {
+  // Filters State
+  const [category, setCategory] = useState(null);
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('date');
+
+  // Modals
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [consoleOpen, setConsoleOpen] = useState(false);
+
+  // Bookmarks / My Constellation (persisted in localStorage with openevents key)
+  const [saved, setSaved] = useState(() => {
+    try {
+      const stored = localStorage.getItem('openevents_saved_events') || localStorage.getItem('scrapeverse_saved_events');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Toast message
+  const [toast, setToast] = useState(null);
+
+  // Load events
+  async function load(modeName = mode) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetchFixtureEvents({ limit: 300 });
+      const res = modeName === 'database'
+        ? await fetchEvents({ limit: 300 })
+        : await fetchFixtureEvents({ limit: 300 });
       setData(res);
     } catch (err) {
-      setError(err.message);
+      setError(err?.message || 'Could not load city events feed.');
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    loadEvents();
+    load(mode);
+  }, [mode]);
+
+  // Sync saved to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('openevents_saved_events', JSON.stringify(saved));
+    } catch {}
+  }, [saved]);
+
+  // Global ⌘K / Ctrl+K keyboard shortcut
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Client-side filtering and search on top of the full dataset
-  const filteredEvents = useMemo(() => {
-    if (!data?.events) return [];
-    let events = [...data.events];
+  const allEvents = useMemo(() => data?.events || [], [data]);
 
-    // Category filter
-    if (activeCategory) {
-      events = events.filter(e => e.category === activeCategory);
-    }
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
 
-    // Search filter — title, venue, area, description
-    const q = searchQuery.trim().toLowerCase();
-    if (q) {
-      events = events.filter(e =>
-        (e.title || '').toLowerCase().includes(q) ||
-        (e.venue || '').toLowerCase().includes(q) ||
-        (e.area || '').toLowerCase().includes(q) ||
-        (e.description || '').toLowerCase().includes(q) ||
-        (e.category || '').toLowerCase().includes(q)
+  const toggleSaved = (event) => {
+    setSaved((prev) => {
+      const exists = prev.some((item) => item.event_id === event.event_id);
+      if (exists) {
+        showToast(`Removed "${event.title.slice(0, 30)}..." from My Constellation`);
+        return prev.filter((item) => item.event_id !== event.event_id);
+      } else {
+        showToast(`Saved "${event.title.slice(0, 30)}..." to My Constellation ✦`);
+        return [...prev, event];
+      }
+    });
+  };
+
+  const navigateTo = (nextPage) => {
+    setPage(nextPage);
+    setSelectedEvent(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const inspectEvent = (event) => {
+    setSelectedEvent(event);
+    setPage('detail');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Render current view
+  const renderContent = () => {
+    if (page === 'detail' && selectedEvent) {
+      return (
+        <EventDetailPage
+          event={selectedEvent}
+          onBack={() => navigateTo('discover')}
+          isSaved={saved.some((item) => item.event_id === selectedEvent.event_id)}
+          onToggleSave={toggleSaved}
+          onSelectEvent={inspectEvent}
+          allEvents={allEvents}
+        />
       );
     }
 
-    // Sort
-    if (sortBy === 'date') {
-      events.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
-    } else if (sortBy === 'price') {
-      // Free events first, then by numeric price ascending
-      events.sort((a, b) => {
-        const priceA = parseFloat(String(a.price).replace(/[^0-9.]/g, '')) || 0;
-        const priceB = parseFloat(String(b.price).replace(/[^0-9.]/g, '')) || 0;
-        return priceA - priceB;
-      });
-    } else if (sortBy === 'category') {
-      events.sort((a, b) => (a.category || '').localeCompare(b.category || ''));
+    if (page === 'discover') {
+      return (
+        <DiscoverPage
+          events={allEvents}
+          activeCategory={category}
+          onSelectCategory={setCategory}
+          search={search}
+          onSearchChange={setSearch}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          onSelectEvent={inspectEvent}
+          savedEvents={saved}
+          onToggleSave={toggleSaved}
+        />
+      );
     }
 
-    return events;
-  }, [data, activeCategory, searchQuery, sortBy]);
+    if (page === 'calendar') {
+      return (
+        <CalendarPage
+          events={allEvents}
+          onSelectEvent={inspectEvent}
+          savedEvents={saved}
+          onToggleSave={toggleSaved}
+        />
+      );
+    }
 
-  // Digest stats (recompute on filter for live-feel)
-  const digestStats = useMemo(() => {
-    if (!data) return null;
-    return {
-      total: filteredEvents.length,
-      unique_venues: new Set(filteredEvents.map(e => e.venue).filter(Boolean)).size,
-    };
-  }, [filteredEvents, data]);
+    if (page === 'venues') {
+      return (
+        <VenuePage
+          events={allEvents}
+          onSelectEvent={inspectEvent}
+          savedEvents={saved}
+          onToggleSave={toggleSaved}
+        />
+      );
+    }
 
-  const categoryBreakdown = useMemo(() => {
-    if (!filteredEvents.length) return data?.category_breakdown || {};
-    const counts = {};
-    filteredEvents.forEach(e => {
-      const c = e.category || 'Talks & Meetups';
-      counts[c] = (counts[c] || 0) + 1;
-    });
-    return counts;
-  }, [filteredEvents, data]);
+    if (page === 'my-week') {
+      return (
+        <MyWeekPage
+          savedEvents={saved}
+          onSelectEvent={inspectEvent}
+          onRemoveSaved={toggleSaved}
+          onNavigate={navigateTo}
+        />
+      );
+    }
+
+    // Default: Home page
+    return (
+      <HomePage
+        events={allEvents}
+        data={data}
+        activeCategory={category}
+        onSelectCategory={setCategory}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        onNavigate={navigateTo}
+        onSelectEvent={inspectEvent}
+        onOpenTriggerPanel={() => setConsoleOpen(true)}
+        savedEvents={saved}
+        onToggleSave={toggleSaved}
+      />
+    );
+  };
 
   return (
-    <div className="app-wrapper">
-      {/* ── Header ── */}
-      <header className="header">
-        <div className="header-inner">
-          <a className="header-logo" href="/" aria-label="Scrapeverse home">
-            <div className="logo-icon">🌐</div>
-            <span className="logo-text">Scrapeverse</span>
-          </a>
-          <div className="header-city-badge">
-            <span className="city-dot" />
-            Hyderabad · This Week
+    <div className="sarvam-root">
+      {/* Fluid Sticky Glass Header */}
+      <FluidNavbar
+        page={page}
+        onNavigate={navigateTo}
+        savedCount={saved.length}
+        onOpenConsole={() => setConsoleOpen(true)}
+        onOpenSearch={() => setSearchOpen(true)}
+      />
+
+      {/* Main View Area with Smooth Motion */}
+      <main className="sv-main-container">
+        {loading && page === 'home' && !data ? (
+          <div className="sv-loading-screen font-mono">
+            <div className="sv-loading-spinner" />
+            <p>STREAMING HYDERABAD CULTURAL ORBIT...</p>
           </div>
-        </div>
-      </header>
-
-      {/* ── Main ── */}
-      <main className="main-content">
-
-        {/* Hero */}
-        <section className="hero">
-          <div className="hero-kicker">
-            <span>✦</span> Live City Events · Powered by Bright Data
-          </div>
-          <h1 className="hero-title">
-            Discover <span>Hyderabad</span><br />This Week
-          </h1>
-          <p className="hero-subtitle">
-            Music, theatre, workshops, talks, food &amp; more — aggregated from multiple sources,
-            de-duplicated, and served fresh.
-          </p>
-
-          {/* Stats bar */}
-          {data && (
-            <div className="stats-bar">
-              <div className="stat-item">
-                <div className="stat-value">{data.total ?? '—'}</div>
-                <div className="stat-label">Events</div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-value">{data.unique_venues ?? '—'}</div>
-                <div className="stat-label">Venues</div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-value">3</div>
-                <div className="stat-label">Sources</div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-value">9</div>
-                <div className="stat-label">Categories</div>
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* Category filter */}
-        <CategoryFilter
-          activeCategory={activeCategory}
-          onChange={setActiveCategory}
-        />
-
-        {/* Search + sort controls */}
-        <div className="controls-row">
-          <div className="search-wrapper">
-            <span className="search-icon" aria-hidden="true">🔍</span>
-            <input
-              id="events-search"
-              className="search-input"
-              type="search"
-              placeholder="Search events, venues, areas…"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              aria-label="Search events"
-            />
-          </div>
-          <select
-            className="sort-select"
-            id="events-sort"
-            value={sortBy}
-            onChange={e => setSortBy(e.target.value)}
-            aria-label="Sort events"
-          >
-            <option value="date">Sort: Date</option>
-            <option value="price">Sort: Price (low → high)</option>
-            <option value="category">Sort: Category</option>
-          </select>
-        </div>
-
-        {/* Results header */}
-        {!loading && !error && (
-          <div className="results-header">
-            <p className="results-count">
-              Showing <strong>{filteredEvents.length}</strong>
-              {activeCategory ? ` "${activeCategory}"` : ''} events
-              {searchQuery ? ` matching "${searchQuery}"` : ''}
-            </p>
-          </div>
-        )}
-
-        {/* Loading */}
-        {loading && (
-          <div className="loading-state" role="status" aria-live="polite">
-            <div className="spinner" />
-            <p className="loading-text">Loading Hyderabad events…</p>
-          </div>
-        )}
-
-        {/* Error */}
-        {!loading && error && (
-          <div className="error-state" role="alert">
-            <div className="error-icon">⚠️</div>
-            <h2 className="error-title">Could not load events</h2>
-            <p className="error-message">
-              {error}. Make sure the backend is running on <code>localhost:8000</code>.
-            </p>
-            <button className="retry-btn" id="retry-btn" onClick={loadEvents}>
-              ↺ Retry
+        ) : error && !data ? (
+          <div className="sv-error-card">
+            <h2 className="sv-error-title font-serif">Could not reach live event stream.</h2>
+            <p className="sv-error-desc">{error}</p>
+            <button
+              type="button"
+              className="sv-primary-btn mt-4"
+              onClick={() => load(mode)}
+            >
+              <span>Retry Connection</span>
+              <span className="ml-1">↻</span>
             </button>
           </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={page + (selectedEvent?.event_id || '')}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
+            >
+              {renderContent()}
+            </motion.div>
+          </AnimatePresence>
         )}
-
-        {/* Events grid */}
-        {!loading && !error && filteredEvents.length > 0 && (
-          <div
-            className="events-grid"
-            role="list"
-            aria-label="Events list"
-          >
-            {filteredEvents.map(event => (
-              <div role="listitem" key={event.event_id}>
-                <EventCard event={event} />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Empty state */}
-        {!loading && !error && filteredEvents.length === 0 && (
-          <div className="empty-state">
-            <div className="empty-icon">🎭</div>
-            <p className="empty-text">
-              No events found{activeCategory ? ` in "${activeCategory}"` : ''}.
-              {searchQuery ? ' Try a different search.' : ' Try another category.'}
-            </p>
-          </div>
-        )}
-
-        {/* Digest Panel */}
-        {!loading && !error && data && (
-          <DigestPanel
-            stats={digestStats}
-            categoryBreakdown={categoryBreakdown}
-          />
-        )}
-
-        {/* Scrape Trigger Panel */}
-        <TriggerPanel onTriggered={() => {}} />
-
       </main>
 
-      {/* ── Footer ── */}
-      <footer className="footer">
-        <p>
-          © 2026 Scrapeverse · City Leisure Events Aggregator ·{' '}
-          <a href="https://brightdata.com" target="_blank" rel="noopener noreferrer">
-            Powered by Bright Data
-          </a>{' '}
-          · Hyderabad Pilot
-        </p>
+      {/* Modern Sarvam Footer */}
+      <footer className="sv-global-footer">
+        <div className="sv-footer-inner">
+          <div className="sv-footer-brand-col">
+            <div className="sv-footer-brand font-serif">
+              <span className="sv-footer-orb" />
+              <span>openevents</span>
+            </div>
+            <p className="sv-footer-tagline">
+              Autonomous cultural observatory for the city of Hyderabad.
+            </p>
+          </div>
+
+          <div className="sv-footer-meta-col font-mono">
+            <div className="sv-footer-status">
+              <span className="sv-live-dot" />
+              <span>COLLECTORS ACTIVE: FULLHYD · HIGHAPE · AROUNDU</span>
+            </div>
+            <div className="sv-footer-copy">
+              <span>© 2026 OPENVENTS // POWERED BY BRIGHT DATA SCRAPING CLOUD</span>
+            </div>
+          </div>
+
+          <div className="sv-footer-action-col font-mono">
+            <button
+              type="button"
+              className="sv-mode-switch-btn"
+              onClick={() => {
+                const nextMode = mode === 'fixture' ? 'database' : 'fixture';
+                setMode(nextMode);
+                load(nextMode);
+              }}
+              title="Toggle between Normalized Fixture and Live Pipeline Database"
+            >
+              <span>FEED: {mode === 'fixture' ? 'FIXTURE ARCHIVE' : 'LIVE DATABASE'}</span>
+              <span className="ml-1 text-saffron">↗</span>
+            </button>
+          </div>
+        </div>
       </footer>
+
+      {/* Global Command Palette Search Modal (⌘K) */}
+      <SearchModal
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        events={allEvents}
+        onSelectEvent={inspectEvent}
+      />
+
+      {/* Scraper / DCA Console Modal */}
+      <TriggerPanel
+        isOpen={consoleOpen}
+        onClose={() => setConsoleOpen(false)}
+        onTriggerScrape={async () => {
+          setMode('database');
+          await load('database');
+        }}
+      />
+
+      {/* Toast Notification Alert */}
+      {toast && (
+        <div className="sv-toast font-mono" role="status">
+          <span>✦</span>
+          <span>{toast}</span>
+        </div>
+      )}
     </div>
   );
 }

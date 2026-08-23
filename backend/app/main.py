@@ -23,7 +23,7 @@ _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")
 FIXTURE_PATH = os.path.join(_REPO_ROOT, "data", "fixtures", "scraped_mock_data.json")
 
 app = FastAPI(
-    title="Scrapeverse — City Leisure Events API",
+    title="OpenEvents — City Leisure Events API",
     description="Resilient backend API for aggregating, validating, normalizing, and de-duplicating city leisure events.",
     version="0.3.0"
 )
@@ -138,7 +138,7 @@ def get_weekly_digest():
 @app.get("/events/categories", response_model=CategoriesResponse, tags=["Taxonomy"])
 def get_categories():
     """
-    Returns the Unified Category Taxonomy supported by Scrapeverse.
+    Returns the Unified Category Taxonomy supported by OpenEvents.
     """
     return {
         "categories": UNIFIED_TAXONOMY

@@ -1,44 +1,50 @@
-import { useState } from 'react';
-import { getCategoryMeta, ALL_CATEGORIES } from '../lib/constants.js';
+import React from 'react';
+import { ALL_CATEGORIES, getCategoryMeta } from '../lib/constants.js';
+import { SparklesIcon, CategoryGlyph } from './Icons.jsx';
 
-const ALL_PILL = { label: 'All Events', icon: '✦' };
-
-export default function CategoryFilter({ activeCategory, onChange }) {
+export default function CategoryFilter({ activeCategory, onChange, counts = {} }) {
   return (
-    <div className="filter-pills" role="group" aria-label="Filter by category">
-      {/* All pill */}
+    <div className="sv-category-rail" role="tablist" aria-label="Filter events by category">
       <button
-        className={`pill${!activeCategory ? ' active' : ''}`}
+        type="button"
+        role="tab"
+        aria-selected={activeCategory === null || activeCategory === 'All'}
+        className={`sv-filter-pill ${activeCategory === null || activeCategory === 'All' ? 'active' : ''}`}
         onClick={() => onChange(null)}
-        id="filter-all"
       >
-        <span>{ALL_PILL.icon}</span>
-        {ALL_PILL.label}
+        <span className="sv-pill-icon-wrap">
+          <SparklesIcon className="w-3.5 h-3.5" />
+        </span>
+        <span className="sv-pill-text">All Signals</span>
+        {counts['All'] !== undefined && (
+          <span className="sv-pill-count">{counts['All']}</span>
+        )}
       </button>
 
       {ALL_CATEGORIES.map((cat) => {
         const meta = getCategoryMeta(cat);
+        const isActive = activeCategory === cat;
+        const count = counts[cat];
+
         return (
           <button
             key={cat}
-            className={`pill${activeCategory === cat ? ' active' : ''}`}
-            onClick={() => onChange(activeCategory === cat ? null : cat)}
-            id={`filter-${cat.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`}
-            style={
-              activeCategory === cat
-                ? {
-                    background: meta.bg,
-                    borderColor: meta.border,
-                    color: meta.color,
-                  }
-                : {}
-            }
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            className={`sv-filter-pill ${isActive ? 'active' : ''}`}
+            onClick={() => onChange(isActive ? null : cat)}
           >
             <span
-              className="pill-dot"
-              style={{ background: meta.color }}
-            />
-            {cat}
+              className="sv-pill-icon-wrap"
+              style={{ color: isActive ? '#FFFFFF' : meta.color }}
+            >
+              <CategoryGlyph category={cat} className="w-3.5 h-3.5" />
+            </span>
+            <span className="sv-pill-text">{cat}</span>
+            {count !== undefined && count > 0 && (
+              <span className="sv-pill-count">{count}</span>
+            )}
           </button>
         );
       })}

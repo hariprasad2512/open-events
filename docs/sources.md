@@ -1,6 +1,6 @@
 # Target Websites — Hyderabad Pilot
 
-> Public, privately run city-event listing platforms targeted for Scrapeverse data collection.
+> Public, privately run city-event listing platforms targeted for OpenEvents data collection.
 
 ---
 

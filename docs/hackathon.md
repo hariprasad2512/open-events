@@ -1,6 +1,6 @@
 # Hackathon Compliance & Strategy
 
-> Rule compliance, technical story, and submission checklist for Scrapeverse — City Leisure Events Aggregator (Hyderabad Pilot).
+> Rule compliance, technical story, and submission checklist for OpenEvents — City Leisure Events Aggregator (Hyderabad Pilot).
 
 ---
 

@@ -1,4 +1,4 @@
-# Scrapeverse — City Leisure Events Aggregator
+# OpenEvents — City Leisure Events Aggregator
 
 > A resilient, self-healing data pipeline that aggregates leisure events across a city, normalizes them into a unified schema, de-duplicates listings across sources, and serves a weekly digest.
 
@@ -6,7 +6,7 @@
 
 ## Overview
 
-**Scrapeverse** aggregates leisure events (music, theatre, workshops, meetups, sports, food, art) happening in a pilot city (**Hyderabad**) from multiple independent, publicly accessible event platforms:
+**OpenEvents** aggregates leisure events (music, theatre, workshops, meetups, sports, food, art) happening in a pilot city (**Hyderabad**) from multiple independent, publicly accessible event platforms:
 - **FullHyd Events** (`events.fullhyderabad.com`) — Dance, music, theatre, arts, sports, workshops, tech, food.
 - **HydHub** (`hydhub.in`) — General events, meetups, concerts.
 - **AroundU** (`aroundu.in/city/hyderabad`) — Neighborhood community meetups (Jubilee Hills, Gachibowli, Hitech City).

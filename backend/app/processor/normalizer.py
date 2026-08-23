@@ -69,7 +69,7 @@ def parse_date(date_str: str) -> str:
     """
     Parses various date text formats across FullHyd, HighApe, AroundU:
     - "23-Aug-26" -> "2026-08-23"
-    - "27-Jun-26 22-Aug-26" -> "2026-06-27"
+    - "27-Jun-26 22-Aug-26" -> "2026-08-22" (takes latest/upcoming bound)
     - "Sun, 23 Aug, 2026 · 02:00 PM to 05:00 PM" -> "2026-08-23"
     - "Sat, 19 Sept, 2026 · 10:00 AM to 10:00 PM" -> "2026-09-19"
     - "23 Aug" / "29 Aug" -> "2026-08-23" / "2026-08-29"
@@ -83,16 +83,18 @@ def parse_date(date_str: str) -> str:
     match_highape = re.search(r"\b(\d{1,2})\s+([A-Za-z]{3,4}),?\s+(\d{4})\b", date_str)
     if match_highape:
         day, month_str, year = match_highape.groups()
-        month_str = month_str[:3] # Normalize Sept -> Sep
+        month_str = month_str[:3]
         try:
             dt = datetime.strptime(f"{day}-{month_str}-{year}", "%d-%b-%Y")
             return dt.strftime("%Y-%m-%d")
         except Exception:
             pass
 
-    # 2. FullHyd format: "23-Aug-26" or range "27-Jun-26 22-Aug-26"
-    first_token = date_str.split()[0]
-    match_dmy = re.match(r"^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$", first_token)
+    # 2. FullHyd format: "23-Aug-26" or range "27-Jun-26 22-Aug-26" (take end date for multi-day ranges)
+    tokens = date_str.split()
+    target_token = tokens[-1] if len(tokens) > 1 and "-" in tokens[-1] else tokens[0]
+    
+    match_dmy = re.match(r"^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$", target_token)
     if match_dmy:
         day, month_str, year = match_dmy.groups()
         if len(year) == 2:
@@ -115,13 +117,13 @@ def parse_date(date_str: str) -> str:
             pass
 
     # 4. Standard slash format: DD/MM/YYYY
-    match_slash = re.match(r"^(\d{2})/(\d{2})/(\d{4})$", first_token)
+    match_slash = re.match(r"^(\d{2})/(\d{2})/(\d{4})$", target_token)
     if match_slash:
         day, month, year = match_slash.groups()
         return f"{year}-{month}-{day}"
         
     try:
-        dt = pd.to_datetime(first_token)
+        dt = pd.to_datetime(target_token)
         return dt.strftime("%Y-%m-%d")
     except Exception:
         return datetime.utcnow().strftime("%Y-%m-%d")
@@ -220,7 +222,9 @@ def normalize_events(raw_items: list) -> list:
     if not raw_items:
         return []
         
+    today_str = datetime.utcnow().strftime("%Y-%m-%d")
     normalized = []
+    
     for item in raw_items:
         title = str(item.get("raw_title", "")).strip()
         if not title:

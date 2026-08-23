@@ -1,112 +1,150 @@
-import { getCategoryMeta, formatDate, formatPrice } from '../lib/constants.js';
+import React from 'react';
+import { formatDate, formatPrice, getCategoryMeta } from '../lib/constants.js';
+import { CalendarIcon, LocationIcon, TicketIcon, SourceIcon, BookmarkIcon, CategoryGlyph } from './Icons.jsx';
 
-export default function EventCard({ event }) {
+export default function EventCard({
+  event,
+  onClick,
+  isSaved = false,
+  onToggleSave
+}) {
+  if (!event) return null;
+
   const {
-    title,
-    category,
+    title = 'Untitled Event',
+    category = 'Music',
     date,
     time,
-    venue,
-    area,
+    venue = 'Hyderabad Venue',
+    area = 'Hyderabad',
     price,
     description,
     sources = [],
+    image
   } = event;
 
   const meta = getCategoryMeta(category);
   const displayPrice = formatPrice(price);
-  const isFree = displayPrice === 'Free';
+  const isFree = displayPrice.toLowerCase().includes('free');
   const primarySource = sources[0] || {};
+  const cardImage = image || meta.fallbackImage;
 
-  // Derive display area from the full locality if area is very long
-  const displayArea = area && area.length < 60 ? area.split(',')[0].trim() : (area || '').split(',')[0].trim();
+  // Clean locality extraction
+  const cleanArea = area ? area.split(',')[0].trim() : 'Hyderabad';
+
+  const handleBookmarkClick = (e) => {
+    e.stopPropagation();
+    if (onToggleSave) onToggleSave(event);
+  };
 
   return (
-    <article className="event-card" id={`event-${event.event_id}`}>
-      {/* Top accent bar */}
-      <div
-        className="event-card-accent"
-        style={{ background: meta.gradient }}
-      />
+    <article
+      className="sv-card group"
+      onClick={onClick}
+      tabIndex={0}
+      role="button"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
+      aria-label={`Event: ${title}`}
+    >
+      {/* Media Header */}
+      <div className="sv-card-media">
+        <img
+          src={cardImage}
+          alt={title}
+          className="sv-card-img"
+          loading="lazy"
+          onError={(e) => {
+            e.currentTarget.src = meta.fallbackImage;
+          }}
+        />
+        <div className="sv-card-media-overlay" />
 
-      <div className="event-card-body">
-        {/* Category + Source */}
-        <div className="event-card-top">
+        {/* Top Badges Bar */}
+        <div className="sv-card-badges-top">
           <span
-            className="event-category-badge"
-            style={{ background: meta.bg, color: meta.color, border: `1px solid ${meta.border}` }}
+            className="sv-category-badge"
+            style={{
+              borderColor: meta.border,
+              backgroundColor: 'rgba(18, 22, 21, 0.82)',
+              color: '#FFFFFF'
+            }}
           >
-            <span>{meta.icon}</span>
-            {category}
+            <span className="badge-glyph-wrap" style={{ color: meta.color }}>
+              <CategoryGlyph category={category} className="w-3.5 h-3.5" />
+            </span>
+            <span className="badge-category-text">{category}</span>
           </span>
-          {primarySource.site_name && (
-            <span className="event-source-badge">{primarySource.site_name}</span>
-          )}
+
+          <button
+            type="button"
+            className={`sv-bookmark-btn ${isSaved ? 'active' : ''}`}
+            onClick={handleBookmarkClick}
+            aria-label={isSaved ? 'Remove from saved constellation' : 'Save to constellation'}
+            title={isSaved ? 'Saved in My Week' : 'Save to My Week'}
+          >
+            <BookmarkIcon className="w-3.5 h-3.5" filled={isSaved} />
+          </button>
         </div>
 
-        {/* Title */}
-        <h2 className="event-title">{title}</h2>
-
-        {/* Description */}
-        {description && description.length > 10 && (
-          <p className="event-description">{description}</p>
-        )}
-
-        {/* Meta info */}
-        <div className="event-meta-row">
-          {date && (
-            <span className="event-meta-item">
-              <span className="event-meta-icon">📅</span>
-              {formatDate(date)}
+        {/* Source Verified Badge */}
+        {primarySource.site_name && (
+          <div className="sv-card-source-bottom">
+            <span className="sv-source-chip">
+              <SourceIcon className="w-3 h-3 text-jade" />
+              <span>{primarySource.site_name}</span>
             </span>
-          )}
-          {time && time !== 'Evening' && (
-            <span className="event-meta-item">
-              <span className="event-meta-icon">🕐</span>
-              {time}
-            </span>
-          )}
-          {venue && (
-            <span className="event-meta-item">
-              <span className="event-meta-icon">📍</span>
-              {venue}
-            </span>
-          )}
-          {displayArea && (
-            <span className="event-meta-item">
-              <span className="event-meta-icon">🏘️</span>
-              {displayArea}
-            </span>
-          )}
-        </div>
-
-        {/* Multi-source chips */}
-        {sources.length > 1 && (
-          <div className="event-sources-row">
-            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginRight: '4px' }}>Also on:</span>
-            {sources.slice(1).map((s, i) => (
-              <span key={i} className="source-chip">{s.site_name}</span>
-            ))}
           </div>
         )}
+      </div>
 
-        {/* Footer: price + link */}
-        <div className="event-card-footer">
-          <span className={`event-price${isFree ? ' free' : ''}`}>
-            {isFree ? '✦ Free' : displayPrice}
-          </span>
-          {primarySource.source_url ? (
-            <a
-              className="event-link"
-              href={primarySource.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={e => e.stopPropagation()}
-            >
-              Details →
-            </a>
-          ) : null}
+      {/* Card Content Body */}
+      <div className="sv-card-body">
+        <div className="sv-card-meta-row">
+          <div className="sv-card-date">
+            <CalendarIcon className="w-3.5 h-3.5 text-saffron" />
+            <span>{formatDate(date)}{time && time !== 'Evening' ? ` · ${time}` : ''}</span>
+          </div>
         </div>
+
+        <h3 className="sv-card-title" title={title}>
+          {title}
+        </h3>
+
+        {description && (
+          <p className="sv-card-desc">
+            {description}
+          </p>
+        )}
+
+        <div className="sv-card-venue">
+          <LocationIcon className="w-3.5 h-3.5 text-muted" />
+          <span className="truncate">{venue} · <span className="text-secondary">{cleanArea}</span></span>
+        </div>
+
+        {/* Multi-source indicator */}
+        {sources.length > 1 && (
+          <div className="sv-card-multisource">
+            <span>+ verified across {sources.length} crawled feeds</span>
+          </div>
+        )}
+      </div>
+
+      {/* Card Footer */}
+      <div className="sv-card-footer">
+        <span className={`sv-price-pill ${isFree ? 'price-free' : 'price-paid'}`}>
+          <TicketIcon className="w-3 h-3 opacity-80" />
+          <span>{displayPrice}</span>
+        </span>
+
+        <span className="sv-card-cta">
+          <span>Inspect</span>
+          <span className="sv-cta-arrow-icon">→</span>
+        </span>
       </div>
     </article>
   );
