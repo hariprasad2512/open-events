@@ -21,15 +21,7 @@ export default function Hero13({
         {/* Left Column: Hero 13 Content */}
         <div className="sv-hero13-left">
           {/* Stretched Outline Badge with Icon Chip */}
-          <div className="sv-hero13-badge font-mono">
-            <span className="sv-hero13-badge-chip">
-              <span className="sv-pill-pulse-dot" />
-            </span>
-            <span className="sv-hero13-badge-text">
-              SYS_ACTIVE // HYDERABAD_GRID // 17.3850° N
-            </span>
-            <span className="sv-hero13-badge-arrow">→</span>
-          </div>
+          
 
           {/* Aggressive High-Impact Headline */}
           <h1 className="sv-hero13-headline font-serif">
@@ -49,7 +41,7 @@ export default function Hero13({
               className="sv-hero13-btn-primary"
               onClick={onExplore}
             >
-              <span>ACCESS SIGNAL INDEX</span>
+              <span>EXPLORE NEW EVENTS</span>
               <span className="sv-btn-arrow-wrap">
                 <ArrowRightIcon className="w-4 h-4" />
               </span>
@@ -61,7 +53,7 @@ export default function Hero13({
               onClick={onTimeline}
             >
               <CalendarIcon className="w-4 h-4 text-saffron" />
-              <span>TIMELINE // IST</span>
+              <span>TIMELINE</span>
             </button>
           </div>
 
@@ -91,22 +83,16 @@ export default function Hero13({
           <span className="sv-hud-reticle bottom-left">+</span>
           <span className="sv-hud-reticle bottom-right">+</span>
 
-          <div className="sv-art-top-bar font-mono">
-            <span>LAT 17.3850° N // LON 78.4867° E</span>
-            <span className="sv-art-live-pill">● HUD_ACTIVE</span>
-          </div>
+          
 
           <CityWebGLScene />
 
           <div className="sv-art-center-badge font-mono">
             <strong className="font-serif">HYD</strong>
-            <span>SPATIAL_ORBIT_MESH</span>
+            
           </div>
 
-          <div className="sv-art-bottom-bar font-mono">
-            <span>BUFFER: 100% // 60 FPS</span>
-            <span>SCROLL_TO_EXPLORE ↓</span>
-          </div>
+          
         </div>
       </div>
     </section>

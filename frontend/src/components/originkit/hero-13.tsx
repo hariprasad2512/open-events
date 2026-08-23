@@ -49,7 +49,7 @@ export default function Hero13({
               className="sv-hero13-btn-primary"
               onClick={onExplore}
             >
-              <span>ACCESS SIGNAL INDEX</span>
+              <span>ACCESS EVENT INDEX</span>
               <span className="sv-btn-arrow-wrap">
                 <ArrowRightIcon className="w-4 h-4" />
               </span>

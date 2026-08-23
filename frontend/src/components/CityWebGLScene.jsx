@@ -195,7 +195,7 @@ export default function CityWebGLScene() {
     <canvas
       ref={canvasRef}
       className="webgl-orbit-canvas"
-      aria-label="Interactive 3D WebGL Cultural Signal Orbit"
+      aria-label="Interactive 3D WebGL Cultural EVENT Orbit"
     />
   );
 }

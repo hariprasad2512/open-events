@@ -12,7 +12,7 @@ export default function EventCard({
 
   const {
     event_id = '0000',
-    title = 'Untitled Signal',
+    title = 'Untitled EVENT',
     category = 'Music',
     date,
     time,
@@ -49,13 +49,10 @@ export default function EventCard({
           onClick?.();
         }
       }}
-      aria-label={`Event Signal: ${title}`}
+      aria-label={`Event EVENT: ${title}`}
     >
       {/* Digitized Top Telemetry Bar */}
-      <div className="sv-hud-top-bar font-mono">
-        <span className="sv-hud-sig-id">SIG_NODE #{cleanId}</span>
-        <span className="sv-hud-status-dot">● ACTIVE</span>
-      </div>
+
 
       {/* Media Window with Scanline Effect */}
       <div className="sv-card-media">
@@ -92,7 +89,7 @@ export default function EventCard({
             className={`sv-bookmark-btn ${isSaved ? 'active' : ''}`}
             onClick={handleBookmarkClick}
             aria-label={isSaved ? 'Saved in constellation' : 'Save to constellation'}
-            title={isSaved ? 'Saved in My Constellation' : 'Save signal'}
+            title={isSaved ? 'Saved in My Constellation' : 'Save EVENT'}
           >
             <BookmarkIcon className="w-3.5 h-3.5" filled={isSaved} />
           </button>
@@ -103,7 +100,7 @@ export default function EventCard({
           <div className="sv-card-source-bottom font-mono">
             <span className="sv-source-chip">
               <SourceIcon className="w-3 h-3 text-jade" />
-              <span>CRAWLED // {primarySource.site_name.toUpperCase()}</span>
+              <span>   {primarySource.site_name.toUpperCase()}</span>
             </span>
           </div>
         )}
@@ -140,7 +137,7 @@ export default function EventCard({
         </span>
 
         <span className="sv-hud-action-btn">
-          <span>ACCESS SIGNAL</span>
+          <span>EXPLORE</span>
           <span className="sv-hud-arrow">→</span>
         </span>
       </div>

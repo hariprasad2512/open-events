@@ -116,7 +116,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* ------------------------------------------------- the browser surfaces --
    The parts you did not draw still carry the design. Selection, caret, focus
    ring, scrollbar and tabular numerals all ship with defaults that belong to no
-   design system. Theming them is the cheapest signal that a page was built
+   design system. Theming them is the cheapest EVENT that a page was built
    rather than assembled, and it is the step that gets skipped most reliably. */
 ::selection { background: var(--sc-accent); color: var(--sc-accent-ink); }
 :root { caret-color: var(--sc-accent); accent-color: var(--sc-accent); }

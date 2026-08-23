@@ -35,7 +35,7 @@ changes only grammar and world will fail it.
 ## What is taken
 
 * **Grammar:** `instrument` (Spatial canvas / living cultural telemetry)
-* **Nav treatment:** `live-pill` (Floating frosted glass pill with live signal counter)
+* **Nav treatment:** `live-pill` (Floating frosted glass pill with live EVENT counter)
 * **Hero device:** `3d-orbit-mesh` (Three.js celestial orbit mesh)
 * **Signature move:** `dual-plane-velocity-sync` (Wheel velocity modulates 3D orbit + WebGL particle ripples)
 * **Act count and length:** 6 acts at ~11.5 vh total span

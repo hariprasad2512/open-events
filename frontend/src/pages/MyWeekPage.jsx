@@ -64,7 +64,7 @@ export default function MyWeekPage({
         (e, i) => `${i + 1}. [${e.category}] ${e.title}\n   📅 ${formatDate(e.date)} · ${e.time || 'Time TBA'}\n   📍 ${e.venue} (${e.area || 'Hyderabad'})\n   🎟️ ${formatPrice(e.price)}`
       ),
       '---------------------------------------',
-      'Curated on openevents (Hyderabad City Signal)'
+      'Curated on openevents (Hyderabad City EVENT)'
     ].join('\n\n');
 
     navigator.clipboard.writeText(text);

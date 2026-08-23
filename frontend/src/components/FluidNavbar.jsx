@@ -11,11 +11,11 @@ export default function FluidNavbar({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { key: 'home', label: '00 // Overview' },
-    { key: 'discover', label: '01 // Signals' },
-    { key: 'calendar', label: '02 // Timeline' },
-    { key: 'venues', label: '03 // Venues' },
-    { key: 'my-week', label: '04 // Constellation', count: savedCount }
+    { key: 'home', label: 'Overview' },
+    { key: 'discover', label: 'All Events' },
+    { key: 'calendar', label: 'Timeline' },
+    { key: 'venues', label: 'Venues' },
+    { key: 'my-week', label: 'Constellation', count: savedCount }
   ];
 
   const handleNav = (key) => {
@@ -42,10 +42,7 @@ export default function FluidNavbar({
             <span className="sv-brand-title font-serif">openevents</span>
           </a>
 
-          <div className="sv-live-tag font-mono">
-            <span className="sv-live-dot" />
-            <span>HYD // 17.38°N</span>
-          </div>
+          
         </div>
 
         {/* Desktop Navigation Links (Digitized Index Tabs) */}
@@ -79,8 +76,7 @@ export default function FluidNavbar({
             title="Search events (⌘K / Ctrl+K)"
           >
             <SearchIcon className="w-3.5 h-3.5 opacity-70" />
-            <span className="sv-search-placeholder">QUERY INDEX</span>
-            <kbd className="sv-kbd">⌘K</kbd>
+            
           </button>
 
           {/* Scraper Console Button */}

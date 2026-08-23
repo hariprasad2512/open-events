@@ -58,7 +58,7 @@ export default function EventDetailPage({
         title: `${title} — Hyderabad`,
         text: `Check out ${title} at ${venue}, Hyderabad.`,
         url: window.location.href
-      }).catch(() => {});
+      }).catch(() => { });
     } else {
       navigator.clipboard.writeText(window.location.href);
       setCopied(true);
@@ -106,7 +106,7 @@ export default function EventDetailPage({
             title="Share event link"
           >
             {copied ? <CheckIcon className="w-3.5 h-3.5 text-jade inline mr-1.5" /> : <ShareIcon className="w-3.5 h-3.5 inline mr-1.5" />}
-            <span>{copied ? 'Link Copied' : 'Share Signal'}</span>
+            <span>{copied ? 'Link Copied' : 'Share EVENT'}</span>
           </button>
 
           <button
@@ -159,7 +159,7 @@ export default function EventDetailPage({
               </span>
               <span>{category}</span>
             </span>
-            <span className="sv-detail-signal-id font-mono">SIGNAL // {event_id}</span>
+            <span className="sv-detail-EVENT-id font-mono">EVENT // {event_id}</span>
           </div>
 
           <h1 className="sv-detail-title">{title}</h1>
@@ -198,7 +198,7 @@ export default function EventDetailPage({
         {/* Left Column: Description & Context */}
         <div className="sv-detail-main-col">
           <section className="sv-detail-section">
-            <h2 className="sv-detail-section-heading">About This Signal</h2>
+            <h2 className="sv-detail-section-heading">About This EVENT</h2>
             <div className="sv-detail-text">
               <p>{description || 'Details are held by the original event organizer on public platforms. Refer to verified provenance feeds below.'}</p>
             </div>
@@ -248,7 +248,7 @@ export default function EventDetailPage({
                 </div>
 
                 <div className="sv-provenance-item">
-                  <span className="sv-prov-label font-mono">CANONICAL SIGNAL ID</span>
+                  <span className="sv-prov-label font-mono">CANONICAL EVENT ID</span>
                   <span className="sv-prov-val font-mono">{event_id}</span>
                 </div>
 
