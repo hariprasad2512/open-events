@@ -4424,3 +4424,94 @@ a {
   .sv-event-gallery { grid-template-columns: 1fr; }
   .sv-footer-inner { width: calc(100% - 32px); }
 }
+
+/* Responsive layout refinements for every routed page and shared overlay. */
+@media (max-width: 1024px) {
+  .fluid-navbar-desktop-nav { display: none; }
+  .fluid-navbar-inner { gap: 10px !important; }
+  .fluid-navbar-actions { gap: 8px !important; }
+  .sv-detail-grid-layout { grid-template-columns: minmax(0, 1fr) 280px; gap: 28px; }
+  .sv-hero-heading { font-size: clamp(3.5rem, 8vw, 5.5rem); }
+}
+
+@media (max-width: 768px) {
+  html { font-size: 14px; }
+  .fluid-navbar { top: 8px !important; width: calc(100% - 24px) !important; border-radius: 22px !important; }
+  .fluid-navbar-inner { height: 58px !important; padding: 0 10px 0 14px !important; }
+  .fluid-navbar-desktop-nav { display: none !important; }
+  .fluid-navbar-actions > button:not(.sv-mobile-toggle) { display: none !important; }
+  .fluid-navbar-actions .sv-mobile-toggle { display: flex !important; }
+  .sv-main-container { width: calc(100% - 32px); padding-bottom: 48px; }
+  .sv-calendar-page, .sv-discover-page, .sv-venue-page, .sv-my-week-page, .sv-detail-page { padding-top: 32px; }
+  .sv-page-header { margin-bottom: 28px; }
+  .sv-page-title { font-size: clamp(2.5rem, 11vw, 4rem); line-height: 1; }
+  .sv-page-desc { font-size: .95rem; margin-bottom: 22px; }
+  .sv-hero-section { padding: 52px 0 36px; }
+  .sv-hero-grid, .sv-hero13-container { grid-template-columns: 1fr; gap: 30px; }
+  .sv-hero-heading, .sv-hero13-headline { font-size: clamp(3rem, 13vw, 5rem); line-height: .98; }
+  .sv-hero-lead, .sv-hero13-lead { font-size: 1rem; }
+  .sv-hero-actions-row, .sv-hero13-actions { flex-wrap: wrap; }
+  .sv-hero-art-container { height: min(82vw, 380px); margin-top: 28px; }
+  .sv-section { padding: 52px 0 20px; }
+  .sv-section-title, .sv-feed-heading .sv-section-title { font-size: clamp(2.35rem, 10vw, 3.5rem); }
+  .sv-section-head { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+  .sv-section-head > div { width: 100%; }
+  .sv-section-head > div:last-child { display: flex; flex-wrap: wrap; }
+  .sv-spotlight-grid, .sv-energy-grid, .sv-event-card-grid, .sv-timeline-cards-row,
+  .sv-venues-grid, .sv-venue-events-grid, .sv-collector-grid, .sv-event-gallery,
+  .sv-pipeline-grid, .sv-faq-grid { grid-template-columns: minmax(0, 1fr); }
+  .sv-spotlight-card.spotlight-0, .spotlight-0 { grid-column: auto; }
+  .sv-detail-nav-bar { align-items: flex-start; margin-bottom: 22px; }
+  .sv-detail-top-actions { width: 100%; flex-wrap: wrap; gap: 8px; }
+  .sv-detail-share-btn, .sv-detail-calendar-btn, .sv-detail-save-btn { flex: 1 1 auto; justify-content: center; padding: 0 10px; }
+  .sv-detail-hero-card { min-height: 380px; margin-bottom: 30px; border-radius: 22px; }
+  .sv-detail-hero-content { min-height: 380px; padding: 24px; }
+  .sv-detail-title { font-size: clamp(2.25rem, 10vw, 3.8rem); margin-bottom: 22px; }
+  .sv-detail-specs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .sv-detail-grid-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .sv-detail-sidebar { order: -1; }
+  .sv-provenance-grid { grid-template-columns: minmax(0, 1fr); }
+  .sv-itinerary-item { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .sv-compact-row { align-items: flex-start; flex-wrap: wrap; }
+  .sv-compact-right { width: 100%; justify-content: space-between; }
+  .sv-stats-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sv-footer-inner { width: calc(100% - 32px); }
+  .sv-modal-backdrop { padding: 10px; align-items: end; }
+  .sv-search-palette, .sv-console-card { width: 100%; max-width: 100%; max-height: 90dvh; border-radius: 20px 20px 14px 14px; }
+  .sv-console-header { padding: 16px; }
+  .sv-console-body { padding: 16px; gap: 18px; }
+  .sv-palette-header { padding: 14px 16px; }
+  .sv-palette-chips { padding: 10px 16px; }
+  .sv-toast { left: 16px; right: 16px; bottom: 16px; width: auto; text-align: center; }
+  .sv-date-strip { width: max-content; }
+  .sv-date-strip-wrapper { margin-right: -16px; padding-right: 16px; }
+  .sv-global-footer { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 480px) {
+  .sv-navbar-wrapper { width: calc(100% - 20px); }
+  .sv-main-container { width: calc(100% - 28px); }
+  .sv-hero-section { padding-top: 42px; }
+  .sv-hero-heading, .sv-hero13-headline { font-size: clamp(2.7rem, 12.5vw, 3.7rem); }
+  .sv-hero-art-container { height: 270px; border-radius: 18px; }
+  .sv-trust-strip { gap: 8px; }
+  .sv-spotlight-card { min-height: 250px; }
+  .sv-date-pill { min-width: 82px; padding: 12px 10px; }
+  .sv-detail-hero-card, .sv-detail-hero-content { min-height: 420px; }
+  .sv-detail-hero-content { padding: 18px; }
+  .sv-detail-EVENT-id { font-size: .58rem; overflow-wrap: anywhere; }
+  .sv-detail-specs-grid { grid-template-columns: 1fr; }
+  .sv-spec-val { line-height: 1.35; }
+  .sv-header-kicker { flex-wrap: wrap; line-height: 1.4; }
+  .sv-stats-bar { grid-template-columns: 1fr 1fr; }
+  .sv-primary-btn, .sv-hero-primary-btn, .sv-hero-secondary-btn { min-height: 44px; }
+}
+
+/* Long text, grids, and media should never force the viewport wider. */
+img, video, canvas, iframe { max-width: 100%; }
+.sv-main-container > *, .sv-main-container section, .sv-detail-grid-layout > *, .sv-hero-grid > * { min-width: 0; }
+@media (max-width: 768px) {
+  .sv-provenance-item, .sv-prov-val, .sv-detail-text, .sv-page-desc { overflow-wrap: anywhere; }
+  .sv-date-strip-wrapper, .sv-palette-chips { scrollbar-width: none; }
+  .sv-date-strip-wrapper::-webkit-scrollbar, .sv-palette-chips::-webkit-scrollbar { display: none; }
+}

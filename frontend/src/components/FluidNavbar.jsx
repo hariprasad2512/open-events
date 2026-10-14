@@ -109,9 +109,9 @@ export default function FluidNavbar({
   };
 
   return (
-    <header style={wrapperSt}>
+    <header className="fluid-navbar" style={wrapperSt}>
       {/* ── inner row ── */}
-      <div style={{
+      <div className="fluid-navbar-inner" style={{
         height: '64px', padding: '0 10px 0 20px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '18px',
       }}>
@@ -147,12 +147,12 @@ export default function FluidNavbar({
         </div>
 
         {/* Desktop Nav — sliding pill indicator */}
-        <div style={{ animation: 'sv-nav-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1s both' }}>
+        <div className="fluid-navbar-desktop-nav" style={{ animation: 'sv-nav-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1s both' }}>
           <SlidingNav navItems={navItems} page={page} onNav={handleNav} />
         </div>
 
         {/* Actions */}
-        <div style={{ 
+        <div className="fluid-navbar-actions" style={{
           display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0,
           animation: 'sv-nav-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1s both'
         }}>
