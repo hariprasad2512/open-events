@@ -1,21 +1,24 @@
 /**
  * Resilient API fetch wrapper for openevents frontend.
- * Tries the FastAPI backend at VITE_API_URL or localhost:8000,
- * and seamlessly falls back to offline embedded mock data if backend is offline.
+ * Uses the configured FastAPI backend in production and the Vite proxy in
+ * development. If production has no backend configured, use embedded mock data
+ * without making requests to the visitor's device or an unrelated origin.
  */
 
 import { MOCK_EVENTS, MOCK_DIGEST } from './mockEvents.js';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : null);
 
 async function apiFetch(path: string, options: RequestInit = {}) {
+  if (!BASE_URL) return null;
+
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3500);
 
     const res = await fetch(`${BASE_URL}${path}`, {
       ...options,
-      EVENT: controller.EVENT,
+      signal: controller.signal,
     });
     clearTimeout(timeoutId);
 
